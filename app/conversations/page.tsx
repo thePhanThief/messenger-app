@@ -22,7 +22,7 @@ const Home = () => {
         isOpen ? 'block' : 'hidden' // Dynamically assign 'block' or 'hidden' based on isOpen state
       )}
     >
-      <EmptyState /> // Display the EmptyState component within this div
+      <EmptyState /> {/* Display the EmptyState component within this div */}
     </div>
   );
 };
