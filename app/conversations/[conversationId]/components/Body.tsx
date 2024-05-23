@@ -14,16 +14,17 @@ interface BodyProps {
 
 const Body: React.FC<BodyProps> = ({ initialMessages }) => {
   const [messages, setMessages] = useState(initialMessages);
-  const bottomeRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null); // Reference to the scroll container
   const { conversationId } = useConversation();
 
+  // Mark the conversation as seen when component mounts
   useEffect(() => {
     axios.post(`/api/conversations/${conversationId}/seen`);
   }, [conversationId]);
 
+  // Subscribe to Pusher events for new and updated messages
   useEffect(() => {
     pusherClient.subscribe(conversationId);
-    bottomeRef?.current?.scrollIntoView();
 
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/conversations/${conversationId}/seen`);
@@ -34,8 +35,6 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
         }
         return [...current, message];
       });
-
-      bottomeRef?.current?.scrollIntoView();
     };
 
     const updatedMessageHandler = (newMessage: FullMessageType) => {
@@ -59,16 +58,22 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
     };
   }, [conversationId]);
 
+  // Scroll to the bottom of the container whenever the messages state updates
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div ref={containerRef} className="flex-1 overflow-y-auto">
       {messages.map((message, i) => (
         <MessageBox
-          isLast={i === messages.length - 1}
-          key={message.id}
-          data={message}
+          isLast={i === messages.length - 1} // Check if this is the last message
+          key={message.id} // Unique key for each message
+          data={message} // Message data passed to MessageBox component
         />
       ))}
-      <div ref={bottomeRef} className="pt-24" />
     </div>
   );
 };
