@@ -20,7 +20,7 @@ const useConversation = () => {
 
     // If found, cast it to a string and return
     return params.conversationId as string;
-  }, [params.conversationId]); // Depend on params.conversationId for re-computation
+  }, [params?.conversationId]); // Depend on params.conversationId for re-computation
 
   // Memoize a boolean indicating whether the conversation ID is present (true if present)
   const isOpen = useMemo(() => !!conversationId, [conversationId]);
