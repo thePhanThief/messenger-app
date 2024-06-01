@@ -10,7 +10,7 @@ import useConversations from "./useConversation";
 const useRoutes = () => {
   // Use Next.js and custom hooks to get current path and conversation context
   const pathname = usePathname();
-  const {conversationId}  = useConversations();
+  const { conversationId } = useConversations();
 
   // Routes definition, memoized to optimize performance
   const routes = useMemo(
@@ -27,7 +27,7 @@ const useRoutes = () => {
         label: "Users",
         href: "/users",
         icon: HiUsers,
-        active: pathname === "/users", 
+        active: pathname === "/users",
       },
       {
         // Logout action: triggers sign out

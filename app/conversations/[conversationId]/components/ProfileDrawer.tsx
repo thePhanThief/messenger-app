@@ -1,66 +1,72 @@
 "use client";
 
-import useOtherUser from "@/app/hooks/useOtherUser";
-import { Conversation, User } from "@prisma/client";
-import { Fragment, useMemo, useState } from "react";
-import { format } from "date-fns";
-import { Dialog, Transition } from "@headlessui/react";
-import { IoClose, IoTrash } from "react-icons/io5";
-import Avatar from "@/app/components/Avatar";
-import ConfirmModal from "./ConfirmModal";
-import AvatarGroup from "@/app/components/GroupAvatar";
-import useActiveList from "@/app/hooks/useActiveList";
+// Import necessary hooks and components
+import useOtherUser from "@/app/hooks/useOtherUser"; // Custom hook to get other user details
+import { Conversation, User } from "@prisma/client"; // Import Conversation and User types from Prisma client
+import { Fragment, useMemo, useState } from "react"; // Import React hooks
+import { format } from "date-fns"; // Import format function from date-fns for date formatting
+import { Dialog, Transition } from "@headlessui/react"; // Import Dialog and Transition components from headlessui
+import { IoClose, IoTrash } from "react-icons/io5"; // Import icons from react-icons/io5
+import Avatar from "@/app/components/Avatar"; // Import Avatar component
+import ConfirmModal from "./ConfirmModal"; // Import ConfirmModal component
+import AvatarGroup from "@/app/components/GroupAvatar"; // Import GroupAvatar component
+import useActiveList from "@/app/hooks/useActiveList"; // Custom hook to get active users list
 
+// Define properties for the ProfileDrawer component
 interface ProfileDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean; // Boolean to control if the drawer is open
+  onClose: () => void; // Function to handle closing the drawer
   data: Conversation & {
-    users: User[];
+    users: User[]; // Extend Conversation type to include an array of users
   };
 }
 
+// Create the ProfileDrawer component
 const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   isOpen,
   onClose,
   data,
 }) => {
-  const otherUser = useOtherUser(data);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const { members } = useActiveList();
-  const isActive = members.indexOf(otherUser?.email!) !== -1;
+  const otherUser = useOtherUser(data); // Get other user details
+  const [confirmOpen, setConfirmOpen] = useState(false); // State to handle confirm modal open/close
+  const { members } = useActiveList(); // Get list of active members
+  const isActive = members.indexOf(otherUser?.email!) !== -1; // Check if the other user is active
 
+  // Format the joined date of the other user
   const joinedDate = useMemo(() => {
-    return format(new Date(otherUser.createdAt), "PP");
+    return format(new Date(otherUser.createdAt), "PP"); // Format date as 'PP'
   }, [otherUser.createdAt]);
 
+  // Determine the title based on the conversation or other user's name
   const title = useMemo(() => {
-    return data.name || otherUser.name;
+    return data.name || otherUser.name; // Return conversation name or other user's name
   }, [data.name, otherUser.name]);
 
+  // Determine the status text based on the conversation type and user activity
   const statusText = useMemo(() => {
     if (data.isGroup) {
-      return `${data.users.length} members`;
+      return `${data.users.length} members`; // Show the number of members if it's a group conversation
     }
-
-    return isActive ? "Active" : "Offline";
+    return isActive ? "Active" : "Offline"; // Show active or offline status for individual conversation
   }, [data, isActive]);
 
   return (
     <>
+      {/* ConfirmModal component for confirming deletion */}
       <ConfirmModal
-        isOpen={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
+        isOpen={confirmOpen} // Pass confirm modal open state
+        onClose={() => setConfirmOpen(false)} // Handle confirm modal close
       />
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={onClose}>
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-500"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-500"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            enter="ease-out duration-500" // Define enter transition
+            enterFrom="opacity-0" // Start state of enter transition
+            enterTo="opacity-100" // End state of enter transition
+            leave="ease-in duration-500" // Define leave transition
+            leaveFrom="opacity-100" // Start state of leave transition
+            leaveTo="opacity-0" // End state of leave transition
           >
             <div
               className="
@@ -99,11 +105,11 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
               >
                 <Transition.Child
                   as={Fragment}
-                  enter="transform transition ease-in-out duration-500"
-                  enterFrom="translate-x-full"
-                  enterTo="translate-x-0"
-                  leave="transform transition ease-in-out duration-500"
-                  leaveTo="translate-x-full"
+                  enter="transform transition ease-in-out duration-500" // Define enter transition
+                  enterFrom="translate-x-full" // Start state of enter transition
+                  enterTo="translate-x-0" // End state of enter transition
+                  leave="transform transition ease-in-out duration-500" // Define leave transition
+                  leaveTo="translate-x-full" // End state of leave transition
                 >
                   <Dialog.Panel
                     className="
@@ -140,7 +146,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                           "
                           >
                             <button
-                              onClick={onClose}
+                              onClick={onClose} // Handle drawer close
                               type="button"
                               className="
                                 rounded-md
@@ -154,7 +160,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                               "
                             >
                               <span className="sr-only">Close panel</span>
-                              <IoClose size={24} />
+                              <IoClose size={24} /> {/* Display close icon */}
                             </button>
                           </div>
                         </div>
@@ -173,22 +179,22 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                         >
                           <div className="mb-2">
                             {data.isGroup ? (
-                              <AvatarGroup users={data.users} />
+                              <AvatarGroup users={data.users} /> // Display group avatar for group conversation
                             ) : (
-                              <Avatar user={otherUser} />
+                              <Avatar user={otherUser} /> // Display avatar for individual conversation
                             )}
                           </div>
-                          <div>{title}</div>
+                          <div>{title}</div> {/* Display conversation title */}
                           <div
                             className="
                             text-sm text-gray-500
                           "
                           >
-                            {statusText}
+                            {statusText} {/* Display status text */}
                           </div>
                           <div className="flex gap-10 my-8">
                             <div
-                              onClick={() => setConfirmOpen(true)}
+                              onClick={() => setConfirmOpen(true)} // Handle confirm modal open
                               className="
                                 flex
                                 flex-col
@@ -209,7 +215,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                                   justify-center
                                 "
                               >
-                                <IoTrash size={20} />
+                                <IoTrash size={20} />{" "}
+                                {/* Display delete icon */}
                               </div>
                               <div
                                 className="
@@ -254,15 +261,16 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                                   </dt>
                                   <dd
                                     className="
-                                      mt-1
-                                      text-sm
-                                      text-gray-900
-                                      sm:col-span-2
-                                    "
+                                        mt-1
+                                        text-sm
+                                        text-gray-900
+                                        sm:col-span-2
+                                      "
                                   >
-                                    {data.users
-                                      .map((user) => user.email)
-                                      .join(", ")}
+                                    {data.users.map((user) => (
+                                      <div className="pt-1" key={user.email}>{user.email}</div>
+                                    ))}{" "}
+                                    {/* Display emails of group members */}
                                   </dd>
                                 </div>
                               )}
@@ -287,7 +295,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                                       sm:col-span-2
                                     "
                                   >
-                                    {otherUser.email}
+                                    {otherUser.email}{" "}
+                                    {/* Display email of the other user */}
                                   </dd>
                                 </div>
                               )}
@@ -315,7 +324,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                                       "
                                     >
                                       <time dateTime={joinedDate}>
-                                        {joinedDate}
+                                        {joinedDate} {/* Display joined date */}
                                       </time>
                                     </dd>
                                   </div>
@@ -337,4 +346,4 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   );
 };
 
-export default ProfileDrawer;
+export default ProfileDrawer; // Export the ProfileDrawer component

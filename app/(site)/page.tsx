@@ -1,30 +1,34 @@
+// Import the Image component from Next.js for optimized images
 import Image from "next/image";
+// Import the AuthForm component for user authentication
 import AuthForm from "./components/AuthForm";
 
+// Define the Home component which renders the main page
 export default function Home() {
   return (
     <div
       className="
-    flex
-    min-h-full
-    flex-col
-    justify-center
-    py-12
-    sm:px-6
-    lg:px-6
-    bg-gray-100
-    "
+        flex
+        min-h-full
+        flex-col
+        justify-center
+        py-12
+        sm:px-6
+        lg:px-8
+        bg-gray-100
+      "
     >
-      {/* logo div */}
+      {/* Container for the logo and heading */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        {/* Logo */}
         <Image
-          alt="Logo"
-          height="48"
-          width="48"
-          className="mx-auto w-auto"
-          src="/images/logo.png"
+          alt="Logo" // Alt text for accessibility
+          height="65" // Height of the logo
+          width="65" // Width of the logo
+          className="mx-auto w-auto" // Center the logo and ensure it doesn't stretch
+          src="/images/logo.png" // Source of the logo image
         />
-        {/* Login text */}
+        {/* Heading */}
         <h2
           className="
             mt-6
@@ -39,7 +43,7 @@ export default function Home() {
         </h2>
       </div>
       {/* Auth Form */}
-      <AuthForm />
+      <AuthForm /> {/* Component to handle user authentication */}
     </div>
   );
 }

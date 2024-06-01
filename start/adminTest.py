@@ -93,12 +93,16 @@ def run_admin(server_host='127.0.0.1', admin_port=65433):
                     send_message(admin_socket, "VERIFIED")
                 else:
                     send_message(admin_socket, "Verification failed.")
-                    break
+                    admin_socket.close()
+                    return
+            elif server_message.startswith("Admin logged in successfully."):
+                print(server_message)
+                handle_chat(admin_socket)
+                return
             else:
                 print(server_message)
-                break
-        
-        handle_chat(admin_socket)  # Start chat handling
+                admin_socket.close()
+                return
 
     except Exception as e:
         print("Error:", e)

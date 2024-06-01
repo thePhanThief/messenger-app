@@ -1,21 +1,24 @@
 "use client";
 
-import useConversation from "@/app/hooks/useConversation";
-import { FullMessageType } from "@/app/types";
-import { useEffect, useRef, useState } from "react";
-import MessageBox from "./MessageBox";
-import axios from "axios";
-import { pusherClient } from "@/app/libs/pusher";
-import { find } from "lodash";
+// Import necessary hooks and libraries
+import useConversation from "@/app/hooks/useConversation"; // Custom hook to get conversation details
+import { FullMessageType } from "@/app/types"; // Import type for messages
+import { useEffect, useRef, useState } from "react"; // Import React hooks
+import MessageBox from "./MessageBox"; // Import MessageBox component
+import axios from "axios"; // Import axios for making HTTP requests
+import { pusherClient } from "@/app/libs/pusher"; // Import Pusher client for real-time updates
+import { find } from "lodash"; // Import find function from lodash
 
+// Define properties for the Body component
 interface BodyProps {
-  initialMessages: FullMessageType[];
+  initialMessages: FullMessageType[]; // Array of initial messages
 }
 
+// Create the Body component
 const Body: React.FC<BodyProps> = ({ initialMessages }) => {
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState(initialMessages); // State to store messages
   const containerRef = useRef<HTMLDivElement>(null); // Reference to the scroll container
-  const { conversationId } = useConversation();
+  const { conversationId } = useConversation(); // Get conversation ID from custom hook
 
   // Mark the conversation as seen when component mounts
   useEffect(() => {
@@ -24,33 +27,37 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
 
   // Subscribe to Pusher events for new and updated messages
   useEffect(() => {
-    pusherClient.subscribe(conversationId);
+    pusherClient.subscribe(conversationId); // Subscribe to Pusher channel for this conversation
 
+    // Handler for new messages
     const messageHandler = (message: FullMessageType) => {
-      axios.post(`/api/conversations/${conversationId}/seen`);
+      axios.post(`/api/conversations/${conversationId}/seen`); // Mark conversation as seen
 
       setMessages((current) => {
         if (find(current, { id: message.id })) {
-          return current;
+          return current; // If message already exists, return current messages
         }
-        return [...current, message];
+        return [...current, message]; // Add new message to messages
       });
     };
 
+    // Handler for updated messages
     const updatedMessageHandler = (newMessage: FullMessageType) => {
       setMessages((current) =>
         current.map((currentMessage) => {
           if (currentMessage.id === newMessage.id) {
-            return newMessage;
+            return newMessage; // Update message if IDs match
           }
-          return currentMessage;
+          return currentMessage; // Return current message otherwise
         })
       );
     };
 
+    // Bind handlers to Pusher events
     pusherClient.bind("messages:new", messageHandler);
     pusherClient.bind("message:update", updatedMessageHandler);
 
+    // Cleanup: Unsubscribe and unbind handlers on component unmount
     return () => {
       pusherClient.unsubscribe(conversationId);
       pusherClient.unbind("messages:new", messageHandler);
@@ -78,4 +85,4 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
   );
 };
 
-export default Body;
+export default Body; // Export the Body component

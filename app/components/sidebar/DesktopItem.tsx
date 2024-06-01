@@ -1,7 +1,7 @@
 "use client";
 
-import clsx from "clsx";
-import Link from "next/link";
+import clsx from "clsx"; // Import clsx for conditionally joining classNames together
+import Link from "next/link"; // Import Link component from Next.js
 
 interface DesktopItemProps {
   label: string;
@@ -11,6 +11,7 @@ interface DesktopItemProps {
   active?: boolean;
 }
 
+// Create the DesktopItem component
 const DesktopItem: React.FC<DesktopItemProps> = ({
   label,
   icon: Icon,
@@ -20,9 +21,10 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
 }) => {
   const handleClick = () => {
     if (onClick) {
-      return onClick();
+      return onClick(); // Call the onClick handler if provided
     }
   };
+
   return (
     <li onClick={handleClick}>
       <Link
@@ -41,14 +43,14 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
           hover:text-black
           hover:bg-gray-100
   `,
-          active && "bg-gray-100 text-black"
+          active && "bg-gray-100 text-black" // Apply active styles if the item is active
         )}
       >
         <Icon className="h-6 w-6 shrink-0" />
-        <span className="sr-only">{label} </span>
+        <span className="sr-only">{label}</span>
       </Link>
     </li>
   );
 };
 
-export default DesktopItem;
+export default DesktopItem; // Export the DesktopItem component

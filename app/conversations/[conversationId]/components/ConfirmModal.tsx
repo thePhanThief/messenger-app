@@ -1,45 +1,49 @@
 "use client";
 
-import Button from "@/app/components/Button";
-import Modal from "@/app/components/Modal";
-import useConversation from "@/app/hooks/useConversation";
-import { Dialog } from "@headlessui/react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import { toast } from "react-hot-toast";
-import { FiAlertTriangle } from "react-icons/fi";
+// Import necessary components and hooks
+import Button from "@/app/components/Button"; // Import Button component
+import Modal from "@/app/components/Modal"; // Import Modal component
+import useConversation from "@/app/hooks/useConversation"; // Custom hook to get conversation details
+import { Dialog } from "@headlessui/react"; // Import Dialog from headlessui
+import axios from "axios"; // Import axios for making HTTP requests
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useCallback, useState } from "react"; // Import React hooks
+import { toast } from "react-hot-toast"; // Import toast for notifications
+import { FiAlertTriangle } from "react-icons/fi"; // Import alert icon from react-icons
 
+// Define properties for the ConfirmModal component
 interface ConfirmModalProps {
-  isOpen?: boolean;
-  onClose: () => void;
+  isOpen?: boolean; // Boolean to control if the modal is open
+  onClose: () => void; // Function to handle closing the modal
 }
 
+// Create the ConfirmModal component
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const router = useRouter();
-  const { conversationId } = useConversation();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter(); // Initialize useRouter for navigation
+  const { conversationId } = useConversation(); // Get conversation ID from custom hook
+  const [isLoading, setIsLoading] = useState(false); // State to handle loading state
 
+  // Handle delete action
   const onDelete = useCallback(() => {
-    setIsLoading(true);
+    setIsLoading(true); // Set loading state to true
 
-    axios.delete(`/api/conversations/${conversationId}`)
+    axios.delete(`/api/conversations/${conversationId}`) // Make delete request to API
     .then(() => {
-      onClose();
-      router.push('/conversations');
-      router.refresh();
+      onClose(); // Close the modal on success
+      router.push('/conversations'); // Navigate to conversations page
+      router.refresh(); // Refresh the page
     })
-    .catch(() => toast.error('Something went wrong!'))
-    .finally(() => setIsLoading(false))
+    .catch(() => toast.error('Something went wrong!')) // Show error toast on failure
+    .finally(() => setIsLoading(false)); // Reset loading state
   }, [conversationId, router, onClose]);
 
   return ( 
     <Modal
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={isOpen} // Pass isOpen prop to Modal component
+      onClose={onClose} // Pass onClose prop to Modal component
     >
       <div className="sm:flex sm:items-start">
         <div
@@ -59,7 +63,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           "
         >
           <FiAlertTriangle
-            className="h-6 w-6 text-red-600"
+            className="h-6 w-6 text-red-600" // Alert icon with red color
           />
         </div>
         <div
@@ -98,16 +102,16 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         "
       >
         <Button
-          disabled={isLoading}
+          disabled={isLoading} // Disable button if loading
           danger
-          onClick={onDelete}
+          onClick={onDelete} // Handle delete action on click
         >
           Delete
         </Button>
         <Button
-          disabled={isLoading}
+          disabled={isLoading} // Disable button if loading
           secondary
-          onClick={onClose}
+          onClick={onClose} // Handle close action on click
         >
           Cancel
         </Button>
@@ -116,4 +120,4 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
    );
 }
  
-export default ConfirmModal;
+export default ConfirmModal; // Export the ConfirmModal component

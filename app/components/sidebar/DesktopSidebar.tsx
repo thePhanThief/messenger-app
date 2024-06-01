@@ -1,26 +1,27 @@
 "use client";
 
-import useRoutes from "@/app/hooks/useRoutes";
-import { useState } from "react";
-import DesktopItem from "./DesktopItem";
-import Avatar from "../Avatar";
-import { User } from "@prisma/client";
-import SettingsModal from "./SettingsModal";
+import useRoutes from "@/app/hooks/useRoutes"; // Import custom hook to get routes
+import { useState } from "react"; // Import useState hook from React
+import DesktopItem from "./DesktopItem"; // Import DesktopItem component
+import Avatar from "../Avatar"; // Import Avatar component
+import { User } from "@prisma/client"; // Import User type from Prisma client
+import SettingsModal from "./SettingsModal"; // Import SettingsModal component
 
 interface DesktopSidebarProps {
   currentUser: User;
 }
 
+// Create the DesktopSidebar component
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
-  const routes = useRoutes();
-  const [isOpen, setIsOpen] = useState(false);
+  const routes = useRoutes(); // Get routes using the custom hook
+  const [isOpen, setIsOpen] = useState(false); // State to handle the visibility of the settings modal
 
   return (
     <>
       <SettingsModal
         currentUser={currentUser}
         isOpen={isOpen}
-        onClose={ () => setIsOpen(false)}
+        onClose={() => setIsOpen(false)}
       />
 
       <div
@@ -41,6 +42,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
           justify-between
       "
       >
+        {/* Navigation for desktop items */}
         <nav className="mt-4 flex flex-col justify-between">
           <ul role="list" className="flex flex-col items-center space-y-1">
             {routes.map((item) => (
@@ -60,7 +62,7 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
             onClick={() => setIsOpen(true)}
             className="cursor-pointer hover:opacity-75 transition"
           >
-            <Avatar user={currentUser}/>
+            <Avatar user={currentUser} />
           </div>
         </nav>
       </div>
@@ -68,4 +70,4 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   );
 };
 
-export default DesktopSidebar;
+export default DesktopSidebar; // Export the DesktopSidebar component

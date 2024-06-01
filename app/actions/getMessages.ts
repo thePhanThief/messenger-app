@@ -1,10 +1,6 @@
 // Import the Prisma client instance from a local module for database operations.
 import prisma from "@/app/libs/prismadb";
 
-// Assuming a dynamic import for conversationId is a mistake (commonly done for Next.js pages but not for API utility functions).
-// Therefore, it's commented out since it seems out of context here.
-// import conversationId from "../conversations/[conversationId]/page";
-
 // Define an asynchronous function to retrieve messages by conversation ID.
 const getMessages = async (conversationId: string) => {
   try {

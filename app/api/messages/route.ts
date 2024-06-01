@@ -3,22 +3,23 @@ import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
 import { pusherServer } from "@/app/libs/pusher";
 
-export async function POST(
-  request: Request
-) {
+// Asynchronous POST function to handle API requests for creating a new message
+export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser();
-    const body = await request.json();
+    const currentUser = await getCurrentUser(); // Get the current user details
+    const body = await request.json(); // Parse the JSON body from the request
     const {
       message,
       image,
       conversationId
-    } = body;
+    } = body; // Destructure necessary properties from the body
 
     if (!currentUser?.id || !currentUser?.email) {
+      // If the current user is not authenticated, return a 401 Unauthorized response
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
+    // Create a new message in the database
     const newMessage = await prisma.message.create({
       data: {
         body: message,
@@ -45,6 +46,7 @@ export async function POST(
       }
     });
 
+    // Update the conversation with the new message
     const updatedConversation = await prisma.conversation.update({
       where: {
         id: conversationId
@@ -67,20 +69,25 @@ export async function POST(
       }
     });
 
+    // Trigger a Pusher event for the new message
     await pusherServer.trigger(conversationId, 'messages:new', newMessage);
 
+    // Get the last message in the updated conversation
     const lastMessage = updatedConversation.messages[updatedConversation.messages.length - 1];
 
-    updatedConversation.users.map((user) => {
+    // Trigger a Pusher event for each user in the conversation to update the conversation
+    updatedConversation.users.forEach((user) => {
       pusherServer.trigger(user.email!, 'conversation:update', {
         id: conversationId,
         messages: [lastMessage]
-      })
+      });
     });
 
+    // Return the newly created message as JSON
     return NextResponse.json(newMessage);
   } catch (error: any) {
+    // Handle any errors during the process
     console.log(error, 'ERROR_MESSAGES');
-    return new NextResponse('InternalError', { status: 500 });
+    return new NextResponse('Internal Error', { status: 500 });
   }
 }

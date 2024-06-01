@@ -1,5 +1,6 @@
 "use client";
 
+// Import necessary hooks and libraries
 import Button from "@/app/components/Button";
 import Modal from "@/app/components/Modal";
 import Select from "@/app/components/inputs/Select";
@@ -8,22 +9,26 @@ import { User } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FieldValues, Form, SubmitHandler, useForm } from "react-hook-form";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
+// Define the properties for the GroupChatModal component
 interface GroupChatModalProps {
   users: User[];
   isOpen?: boolean;
   onClose: () => void;
 }
 
+// Create the GroupChatModal component
 const GroupChatModal: React.FC<GroupChatModalProps> = ({
   users,
   isOpen,
   onClose,
 }) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter(); // Get the router instance
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+
+  // Set up the form using react-hook-form
   const {
     register,
     handleSubmit,
@@ -32,27 +37,29 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      name: "",
-      members: [],
+      name: "", // Default value for the group name
+      members: [], // Default value for the members array
     },
   });
-  const members = watch("members");
 
+  const members = watch("members"); // Watch the members field
+
+  // Handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsLoading(true);
+    setIsLoading(true); // Set loading state to true
 
     axios
       .post("/api/conversations", {
         ...data,
-        isGroup: true,
+        isGroup: true, // Indicate that this is a group conversation
       })
       .then(() => {
-        router.refresh();
-        onClose();
+        router.refresh(); // Refresh the page on success
+        onClose(); // Close the modal on success
       })
-      .catch(() => toast.error("Something went wrong"))
+      .catch(() => toast.error("Something went wrong")) // Show error toast on failure
       .finally(() => {
-        setIsLoading(false);
+        setIsLoading(false); // Set loading state to false
       });
   };
 
@@ -69,49 +76,49 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
             </p>
             <div className="mt-10 flex flex-col gap-y-8">
               <Input
-                register={register}
-                label="name"
-                id="name"
-                disabled={isLoading}
-                required
-                errors={errors}
+                register={register} // Register the input field with react-hook-form
+                label="name" // Label for the input field
+                id="name" // ID for the input field
+                disabled={isLoading} // Disable the input field if loading
+                required // Mark the input field as required
+                errors={errors} // Pass any validation errors
               />
               <Select
-                disabled={isLoading}
-                label="Members"
+                disabled={isLoading} // Disable the select field if loading
+                label="Members" // Label for the select field
                 options={users.map((user) => ({
                   value: user.id,
                   label: user.name,
-                }))}
+                }))} // Map users to options for the select field
                 onChange={(value) =>
                   setValue("members", value, {
                     shouldValidate: true,
                   })
-                }
-                value={members}
+                } // Handle value change for the select field
+                value={members} // Value of the select field
               />
             </div>
           </div>
         </div>
         <div className="mt-6 flex items-center justify-end gap-x-3">
-                <Button
-                disabled={isLoading}
-                type="button"
-                secondary
-                onClick={onClose}
-                >
-                    Cancel
-                </Button>
-                <Button
-                disabled={isLoading}
-                type="submit"
-                >
-                    Create
-                </Button>
+          <Button
+            disabled={isLoading}
+            type="button"
+            secondary
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            disabled={isLoading}
+            type="submit"
+          >
+            Create
+          </Button>
         </div>
       </form>
     </Modal>
   );
 };
 
-export default GroupChatModal;
+export default GroupChatModal; // Export the GroupChatModal component

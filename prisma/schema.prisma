@@ -16,10 +16,10 @@ datasource db {
 model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId // MongoDB's unique identifier for each user, auto-generated.
   name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String? // Optional image URL.
-  hashedPassword String? // Optional field for storing the hashed password.
+  email          String?   @unique // Unique email address for the user.
+  emailVerified  DateTime? // Optional field to store email verification date and time.
+  image          String?   // Optional field to store user's profile image URL.
+  hashedPassword String?   // Optional field for storing the hashed password.
   createdAt      DateTime  @default(now()) // Automatically sets to the current date and time when a User record is created.
   updatedAt      DateTime  @updatedAt // Automatically updates to the current date and time whenever a User record is updated.
 
@@ -45,7 +45,7 @@ model Account {
   // Optional fields for OAuth tokens and related information:
   refresh_token String? @db.String // Optional string to store the refresh token, which can be used to obtain a new access token once the current one expires.
   access_token  String? @db.String // Optional string to store the access token, which is used to authenticate API requests on behalf of the user.
-  expires_at    Int? // Optional integer to store the expiration time of the access token, typically represented as a Unix timestamp.
+  expires_at    Int?    // Optional integer to store the expiration time of the access token, typically represented as a Unix timestamp.
   token_type    String? // Optional string to specify the type of token issued (e.g., Bearer).
   scope         String? // Optional string to specify the scope of the access token as defined by the authorization server.
   id_token      String? @db.String // Optional string to store the ID token, which contains identity information about the user.
@@ -61,7 +61,7 @@ model Conversation {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId // Unique identifier for each conversation, auto-generated.
   createdAt     DateTime @default(now()) // Sets the creation date and time of the conversation.
   lastMessageAt DateTime @default(now()) // Sets the date and time of the last message in the conversation.
-  name          String? // Optional name of the conversation, useful for group chats.
+  name          String?  // Optional name of the conversation, useful for group chats.
   isGroup       Boolean? // Optional boolean indicating if the conversation is a group chat.
 
   messagesIds String[]  @db.ObjectId // Array of ObjectIds for messages in the conversation.
@@ -74,8 +74,8 @@ model Conversation {
 // Defines a Message model for storing message data within conversations.
 model Message {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId // Unique identifier for each message, auto-generated.
-  body      String? // Optional message text.
-  image     String? // Optional URL for an image attached to the message.
+  body      String?  // Optional message text.
+  image     String?  // Optional URL for an image attached to the message.
   createdAt DateTime @default(now()) // Sets the creation date and time of the message.
 
   // Fields for managing message visibility and ownership:

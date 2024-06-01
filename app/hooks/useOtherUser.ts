@@ -22,17 +22,17 @@ const useOtherUser = (
   const session = useSession();
 
   // Memoize calculation of the other user in the conversation to avoid unnecessary re-computations
-  const OtherUser = useMemo(() => {
+  const otherUser = useMemo(() => {
     // Extract the current user's email from the session
     const currentUserEmail = session?.data?.user?.email;
 
     // Filter out the current user from the conversation's users array to find the other user
-    const otherUser = conversation.users.filter((user) => user.email !== currentUserEmail)
+    const otherUser = conversation.users.filter((user) => user.email !== currentUserEmail);
   
     return otherUser; // Return the other user found
   }, [session?.data?.user?.email, conversation.users]); // Dependencies for memoization
 
-  return OtherUser[0]; // Return the memoized other user
+  return otherUser[0]; // Return the memoized other user
 };
 
 // Export the useOtherUser hook for use in other parts of the application

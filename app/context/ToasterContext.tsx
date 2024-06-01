@@ -1,11 +1,12 @@
 "use client";
 
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast"; // Import Toaster component from react-hot-toast
 
+// Create the ToasterContext component to provide toast notifications context
 const ToasterContext = () => {
   return (
-  <Toaster />
+    <Toaster /> // Render the Toaster component to enable toast notifications
   );
 };
 
-export default ToasterContext;
+export default ToasterContext; // Export the ToasterContext component

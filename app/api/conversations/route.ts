@@ -48,11 +48,13 @@ export async function POST(request: Request) {
           users: true,
         },
       });
-      newConversation.users.forEach((user)=> {
-        if(user.email) {
-          pusherServer.trigger(user.email, 'conversation:new' , newConversation)
+
+      // Notify users in the new group about the new conversation
+      newConversation.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(user.email, 'conversation:new', newConversation);
         }
-      })
+      });
 
       // Return the newly created conversation as JSON
       return NextResponse.json(newConversation);
@@ -102,16 +104,18 @@ export async function POST(request: Request) {
       },
     });
 
-    newConversation.users.map((user)=> {
-      if(user.email) {
-        pusherServer.trigger(user.email, 'conversation:new' , newConversation)
-      } 
-    })
+    // Notify users in the new conversation about the new conversation
+    newConversation.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, 'conversation:new', newConversation);
+      }
+    });
 
     // Return the newly created conversation as JSON
     return NextResponse.json(newConversation);
   } catch (error: any) {
     // Handle any errors during the process
-    return new NextResponse("InternalError", { status: 500 });
+    console.log(error, 'ERROR_CREATING_CONVERSATION');
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

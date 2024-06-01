@@ -8,10 +8,12 @@ import time
 from queue import Queue
 
 credentials_file = "approved_credentials.json"  # File to store approved credentials
-admin_credentials_file = "approved_admin.json"
+admin_credentials = {
+    "admin": hashlib.sha256("password".encode('utf-8')).hexdigest()  # Replace with the actual hashed password
+}
 
 # Load approved credentials from the file
-def load_credentials(credentials_file):
+def load_credentials():
     if os.path.exists(credentials_file):
         with open(credentials_file, "r") as file:
             return json.load(file)
@@ -22,8 +24,7 @@ def save_credentials(credentials):
     with open(credentials_file, "w") as file:
         json.dump(credentials, file)
 
-approved_credentials = load_credentials(credentials_file)
-admin_credentials = load_credentials(admin_credentials_file)
+approved_credentials = load_credentials()
 pending_clients = Queue()  # Queue for pending client approvals
 admin_socket = None
 admin_connected = threading.Event()  # Event to indicate if an admin is connected
@@ -74,7 +75,7 @@ def is_server_running(host='127.0.0.1', port=3000):
 # Function to handle admin connections
 def handle_admin(admin_socket):
     global admin_connected
-    
+
     # Check if an admin is already connected
     if admin_connected.is_set():
         send_message(admin_socket, "Another admin is already connected.")
@@ -85,10 +86,18 @@ def handle_admin(admin_socket):
         # Prompt admin for username
         send_message(admin_socket, "Enter admin username:")
         username = receive_message(admin_socket)
+        if not username:
+            send_message(admin_socket, "No username received. Connection will be terminated.")
+            admin_socket.close()
+            return False
 
         # Prompt admin for password
         send_message(admin_socket, "Enter admin password:")
         password = receive_message(admin_socket)
+        if not password:
+            send_message(admin_socket, "No password received. Connection will be terminated.")
+            admin_socket.close()
+            return False
 
         # Hash the received password
         hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
@@ -162,6 +171,22 @@ def admin_command_handler(admin_socket):
 
     # Start the periodic queue check in a separate thread
     threading.Thread(target=check_queue_periodically).start()
+
+    def check_client_alive():
+        while admin_connected.is_set():
+            if current_client:
+                client_socket, client_username, _ = current_client
+                try:
+                    send_message(client_socket, "")  # Send keep-alive check
+                except Exception as e:
+                    print(f"Client {client_username} disconnected unexpectedly.")
+                    send_message(admin_socket, f"Client '{client_username}' disconnected unexpectedly.")
+                    current_client = None
+                    notify_next_client_in_queue()
+            time.sleep(5)  # Check every 5 seconds
+
+    # Start the client alive check in a separate thread
+    threading.Thread(target=check_client_alive).start()
 
     try:
         while admin_connected.is_set():
@@ -287,7 +312,7 @@ def update_client_queue_positions():
 def handle_client(client_socket, address):
     global pending_clients, admin_socket, current_client, client_sockets
     print(f"[NEW CONNECTION] {address} connected.")
-    
+
     username = ""
     try:
         while True:
@@ -297,7 +322,7 @@ def handle_client(client_socket, address):
                 send_message(client_socket, "No username received. Connection will be terminated.")
                 client_socket.close()
                 return
-            
+
             send_message(client_socket, "Enter password:")
             password = receive_message(client_socket)
             if not password:
@@ -306,7 +331,7 @@ def handle_client(client_socket, address):
                 return
 
             hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            
+
             if username in approved_credentials:
                 if approved_credentials[username] != hashed_password:
                     send_message(client_socket, "Username already taken or password is incorrect. Please try again or choose a different username.")
@@ -314,31 +339,31 @@ def handle_client(client_socket, address):
             elif any(client[1] == username for client in list(pending_clients.queue)):
                 send_message(client_socket, "Username already taken. Please try again or choose a different username.")
                 continue
-            
+
             challenge = generate_challenge()
             send_message(client_socket, f"CHALLENGE:{challenge}")
-            
+
             client_hash = receive_message(client_socket)
             if not client_hash:
                 send_message(client_socket, "No challenge response received. Connection will be terminated.")
                 client_socket.close()
                 return
-            
+
             expected_hash = hashlib.sha256(challenge.encode('utf-8')).hexdigest()
             if client_hash != expected_hash:
                 send_message(client_socket, "Failed security check. Connection will be terminated.")
                 client_socket.close()
                 return
-            
+
             server_hash = hashlib.sha256((challenge + "server").encode('utf-8')).hexdigest()
             send_message(client_socket, f"VERIFY:{server_hash}")
-            
+
             verification = receive_message(client_socket)
             if verification != "VERIFIED":
                 send_message(client_socket, "Verification failed. Connection will be terminated.")
                 client_socket.close()
                 return
-            
+
             if username in approved_credentials:
                 send_message(client_socket, "Approved. Connection established.")
                 if not is_server_running():
@@ -356,7 +381,7 @@ def handle_client(client_socket, address):
                 pending_clients.put((client_socket, username, hashed_password))
                 client_sockets[username] = client_socket
                 send_message(client_socket, "Waiting for admin approval.")
-                
+
                 if admin_connected.is_set() and current_client is None:
                     notify_next_client_in_queue()
                 else:
@@ -403,12 +428,12 @@ def start_server(host='127.0.0.1', client_port=65432, admin_port=65433):
     client_server_socket.bind((host, client_port))
     client_server_socket.listen()
     print(f"[LISTENING] Client server is listening on {host}:{client_port}")
-    
+
     admin_server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     admin_server_socket.bind((host, admin_port))
     admin_server_socket.listen()
     print(f"[LISTENING] Admin server is listening on {host}:{admin_port}")
-    
+
     admin_thread = threading.Thread(target=accept_admin_connections, args=(admin_server_socket,))
     admin_thread.start()
 

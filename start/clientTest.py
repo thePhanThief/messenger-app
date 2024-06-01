@@ -5,7 +5,6 @@ import threading
 def send_message(sock, message):
     try:
         sock.sendall((message + '\n').encode('utf-8'))
-        print(f"Sent: {message}")
     except Exception as e:
         print(f"Error sending message: {e}")
 
@@ -93,12 +92,16 @@ def run_client(server_host='127.0.0.1', server_port=65432):
                     send_message(client_socket, "VERIFIED")
                 else:
                     send_message(client_socket, "Verification failed.")
+                    client_socket.close()
                     return
+            elif server_message.startswith("Approved. Connection established.") or server_message.startswith("Waiting for admin approval."):
+                print(server_message)
+                handle_chat(client_socket, stop_chat)
+                return
             else:
                 print(server_message)
-                break
-
-        handle_chat(client_socket, stop_chat)
+                client_socket.close()
+                return
 
     except Exception as e:
         print("Error:", e)

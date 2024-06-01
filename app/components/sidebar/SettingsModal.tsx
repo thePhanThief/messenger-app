@@ -1,31 +1,35 @@
 "use client";
 
-import { User } from "@prisma/client";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import Modal from "../Modal";
-import Input from "../inputs/input";
-import Image from "next/image";
-import { CldUploadButton } from "next-cloudinary";
-import Button from "../Button";
+// Import necessary modules and components
+import { User } from "@prisma/client"; // Import User type from Prisma client
+import axios from "axios"; // Import axios for making HTTP requests
+import { useRouter } from "next/navigation"; // Import useRouter from next/navigation for client-side routing
+import { useState } from "react"; // Import useState hook from React
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form"; // Import necessary functions and types from react-hook-form
+import toast from "react-hot-toast"; // Import toast for displaying notifications
+import Modal from "../Modal"; // Import Modal component
+import Input from "../inputs/input"; // Import Input component
+import Image from "next/image"; // Import Image component from Next.js
+import { CldUploadButton } from "next-cloudinary"; // Import CldUploadButton for handling image uploads with Cloudinary
+import Button from "../Button"; // Import Button component
 
+// Define the properties for the SettingsModal component
 interface SettingsModalProps {
-  currentUser: User;
-  isOpen?: boolean;
-  onClose: () => void;
+  currentUser: User; // The current user object
+  isOpen?: boolean; // Boolean to control if the modal is open
+  onClose: () => void; // Function to handle closing the modal
 }
 
+// Create the SettingsModal component
 const SettingsModal: React.FC<SettingsModalProps> = ({
   currentUser,
   isOpen,
   onClose,
 }) => {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter(); // Initialize useRouter hook for client-side navigation
+  const [isLoading, setIsLoading] = useState(false); // State to handle loading state
 
+  // Initialize useForm hook with default values
   const {
     register,
     handleSubmit,
@@ -34,33 +38,37 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      name: currentUser?.name,
-      image: currentUser?.image,
+      name: currentUser?.name, // Set default value for name
+      image: currentUser?.image, // Set default value for image
     },
   });
 
-  const image = watch("image");
+  const image = watch("image"); // Watch the image field for changes
+
+  // Handle the image upload and set the image value in the form
   const handleUpload = (result: any) => {
     setValue("image", result?.info?.secure_url, {
-      shouldValidate: true,
+      shouldValidate: true, // Validate the field after setting the value
     });
   };
 
+  // Handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsLoading(true);
+    setIsLoading(true); // Set loading state to true
 
     axios
-      .post("/api/settings", data)
+      .post("/api/settings", data) // Post the data to the API
       .then(() => {
-        router.refresh();
-        onClose();
+        router.refresh(); // Refresh the page on success
+        onClose(); // Close the modal on success
       })
-      .catch(() => toast.error("Something went wrong"))
-      .finally(() => setIsLoading(false));
+      .catch(() => toast.error("Something went wrong")) // Show error toast on failure
+      .finally(() => setIsLoading(false)); // Reset loading state
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
+      {/* Form to handle settings */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-12">
           <div className="border-b border-gray-900/10 pb-12">
@@ -72,6 +80,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             </p>
 
             <div className="mt-10 flex flex-col gap-y-8">
+              {/* Input for name */}
               <Input
                 disabled={isLoading}
                 label="Name"
@@ -103,6 +112,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     }
                     alt="Avatar"
                   />
+                  {/* Upload button for the photo */}
                   <CldUploadButton
                     options={{ maxFiles: 1 }}
                     onSuccess={handleUpload}
@@ -120,7 +130,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <Button disabled={isLoading} secondary onClick={onClose}>
-            Cancle
+            Cancel
           </Button>
           <Button disabled={isLoading} type="submit">
             Save
@@ -131,4 +141,4 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   );
 };
 
-export default SettingsModal;
+export default SettingsModal; // Export the SettingsModal component

@@ -1,44 +1,49 @@
 "use client";
 
-import { User } from "@prisma/client";
-import Image from "next/image";
+import { User } from "@prisma/client"; // Import User type from Prisma client
+import Image from "next/image"; // Import Image component from Next.js
 
-interface AvatarGroupProps {
-  users: User[];
+// Define the properties for the GroupAvatar component
+interface GroupAvatarProps {
+  users?: User[]; // Define users property which is an array of User objects
 }
 
-const AvatarGroup: React.FC<AvatarGroupProps> = ({ users = [] }) => {
-  const slicedUsers = users.slice(0, 3);
+// Create the GroupAvatar component
+const GroupAvatar: React.FC<GroupAvatarProps> = ({ users = [] }) => {
+  const slicedUsers = users.slice(0, 3); // Slice the first three users
 
-  const posisionMap = {
+  // Define positions for the avatars
+  const positionMap = {
     0: "top-0 left-[12px]",
     1: "bottom-0",
     2: "bottom-0 right-0",
   };
+
   return (
     <div className="relative h-11 w-11">
+      {/* Map through sliced users and display their avatars */}
       {slicedUsers.map((user, index) => (
         <div
-        key={user.id}
-        className={`
-        absolute
-        inline-block
-        rounded-full
-        overflow-hidden
-        h-[21px]
-        w-[21px]
-        ${posisionMap[index as keyof typeof posisionMap]}
-        `}
+          key={user.id}
+          className={`
+            absolute
+            inline-block
+            rounded-full
+            overflow-hidden
+            h-[21px]
+            w-[21px]
+            ${positionMap[index as keyof typeof positionMap]} // Set position based on index
+          `}
         >
-          <Image 
-            alt="Avater"
+          <Image
             fill
-            src={user?.image|| '/images/placeholder.jpg'}
-          /> 
+            src={user?.image || "/images/placeholder.jpg"} // Set user's image or placeholder
+            alt="Avatar"
+          />
         </div>
       ))}
     </div>
   );
 };
 
-export default AvatarGroup;
+export default GroupAvatar; // Export the GroupAvatar component

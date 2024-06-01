@@ -1,43 +1,44 @@
-'use client';
+"use client";
 
-import useConversation from "@/app/hooks/useConversation";
-import useRoutes from "@/app/hooks/useRoutes";
-import MobileItem from "./MobileItem";
+import useConversation from "@/app/hooks/useConversation"; // Import custom hook to get conversation details
+import useRoutes from "@/app/hooks/useRoutes"; // Import custom hook to get routes
+import MobileItem from "./MobileItem"; // Import MobileItem component
 
+// Create the MobileFooter component
 const MobileFooter = () => {
-  const routes = useRoutes();
-  const { isOpen } = useConversation();
+  const routes = useRoutes(); // Get routes using the custom hook
+  const { isOpen } = useConversation(); // Get conversation open state using the custom hook
 
   if (isOpen) {
-    return null;
+    return null; // If a conversation is open, do not render the footer
   }
 
-  return ( 
-    <div 
+  return (
+    <div
       className="
-        fixed 
-        justify-between 
-        w-full 
-        bottom-0 
-        z-40 
-        flex 
-        items-center 
-        bg-white 
-        border-t-[1px] 
+        fixed
+        justify-between
+        w-full
+        bottom-0
+        z-40
+        flex
+        items-center
+        bg-white
+        border-t-[1px]
         lg:hidden
-      "
+    "
     >
       {routes.map((route) => (
-        <MobileItem 
-          key={route.href} 
-          href={route.href} 
-          active={route.active} 
+        <MobileItem
+          key={route.label}
+          href={route.href}
+          active={route.active}
           icon={route.icon}
           onClick={route.onClick}
         />
       ))}
     </div>
-   );
-}
- 
-export default MobileFooter;
+  );
+};
+
+export default MobileFooter; // Export the MobileFooter component

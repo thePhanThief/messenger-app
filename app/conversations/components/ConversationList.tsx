@@ -1,5 +1,6 @@
 "use client";
 
+// Import necessary libraries and hooks
 import clsx from "clsx";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,27 +16,28 @@ import { useSession } from "next-auth/react";
 import { pusherClient } from "@/app/libs/pusher";
 import { find } from "lodash";
 
+// Define the properties for the ConversationList component
 interface ConversationListProps {
   initialItems: FullConversationType[];
-  users: User[]
+  users: User[];
 }
 
-const ConversationList: React.FC<ConversationListProps> = ({
-  initialItems,
-  users
-}) => {
-  const session = useSession();
-  const [items, setItems] = useState(initialItems);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// Create the ConversationList component
+const ConversationList: React.FC<ConversationListProps> = ({ initialItems, users }) => {
+  const session = useSession(); // Get the current session
+  const [items, setItems] = useState(initialItems); // State to manage conversation items
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage the modal open/close
 
-  const router = useRouter();
+  const router = useRouter(); // Get the router instance
 
-  const { conversationId, isOpen } = useConversation();
+  const { conversationId, isOpen } = useConversation(); // Custom hook to get the current conversation state
 
+  // Get the pusher key based on the user's email
   const pusherKey = useMemo(() => {
     return session.data?.user?.email;
   }, [session.data?.user?.email]);
 
+  // UseEffect hook to subscribe to Pusher events
   useEffect(() => {
     if (!pusherKey) {
       return;
@@ -48,7 +50,6 @@ const ConversationList: React.FC<ConversationListProps> = ({
         if (find(current, { id: conversation.id })) {
           return current;
         }
-
         return [conversation, ...current];
       });
     };
@@ -58,17 +59,16 @@ const ConversationList: React.FC<ConversationListProps> = ({
         if (currentConversation.id === conversation.id) {
           return {
             ...currentConversation,
-            messages: conversation.messages
-          }
+            messages: conversation.messages,
+          };
         }
-
         return currentConversation;
-      }))
+      }));
     };
 
     const removeHandler = (conversation: FullConversationType) => {
       setItems((current) => {
-        return [...current.filter((convo) => convo.id !== conversation.id)]
+        return [...current.filter((convo) => convo.id !== conversation.id)];
       });
 
       if (conversationId === conversation.id) {
@@ -85,15 +85,15 @@ const ConversationList: React.FC<ConversationListProps> = ({
       pusherClient.unbind('conversation:new', newHandler);
       pusherClient.unbind('conversation:update', updateHandler);
       pusherClient.unbind('conversation:remove', removeHandler);
-    }
+    };
   }, [pusherKey, conversationId, router]);
 
   return (
     <>
       <GroupChatModal
-        users={users}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        users={users} // Pass users to the GroupChatModal
+        isOpen={isModalOpen} // Pass modal open state to the GroupChatModal
+        onClose={() => setIsModalOpen(false)} // Function to close the modal
       />
       <aside
         className={clsx(`
@@ -108,7 +108,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
           border-r
           border-gray-200
         `,
-          isOpen ? 'hidden' : 'block w-full left-0'
+          isOpen ? 'hidden' : 'block w-full left-0' // Apply styles based on whether the conversation is open
         )}
       >
         <div className="px-5">
@@ -121,7 +121,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
               Messages
             </div>
             <div
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsModalOpen(true)} // Open the modal on click
               className="
                 rounded-full
                 p-2
@@ -132,20 +132,20 @@ const ConversationList: React.FC<ConversationListProps> = ({
                 transition
               "
             >
-              <MdOutlineGroupAdd size={20} />
+              <MdOutlineGroupAdd size={20} /> {/* Icon for adding a group */}
             </div>
           </div>
           {items.map((item) => (
             <ConversationBox
-              key={item.id}
-              data={item}
-              selected={conversationId === item.id}
+              key={item.id} // Unique key for each conversation
+              data={item} // Pass conversation data to ConversationBox
+              selected={conversationId === item.id} // Pass selected state to ConversationBox
             />
           ))}
         </div>
       </aside>
     </>
-   );
-}
- 
-export default ConversationList;
+  );
+};
+
+export default ConversationList; // Export the ConversationList component

@@ -2,6 +2,7 @@
 
 import ReactSelect from "react-select";
 
+// Interface for the properties of the Select component.
 interface SelectProps {
   disabled?: boolean;
   label: string;
@@ -10,6 +11,7 @@ interface SelectProps {
   value?: Record<string, any>;
 }
 
+// Create the Select component.
 const Select: React.FC<SelectProps> = ({
   disabled,
   label,
@@ -24,20 +26,20 @@ const Select: React.FC<SelectProps> = ({
       </label>
       <div className="mt-2">
         <ReactSelect
-          isDisabled={disabled}
-          value={value}
-          onChange={onChange}
-          isMulti
-          options={options}
-          menuPortalTarget={document.body}
+          isDisabled={disabled} // Disables the select if the disabled prop is true.
+          value={value} // Sets the current value of the select.
+          onChange={onChange} // Function to handle value change.
+          isMulti // Allows multiple selections.
+          options={options} // Options to display in the select.
+          menuPortalTarget={document.body} // Ensures the select menu portal is appended to the body.
           styles={{
             menuPortal: (base) => ({
               ...base,
-              zIndex: 9999,
+              zIndex: 9999, // Ensures the select menu has a high z-index.
             }),
           }}
           classNames={{
-            control: () => "text-sm",
+            control: () => "text-sm", // Adds custom styling to the control.
           }}
         />
       </div>
@@ -45,4 +47,4 @@ const Select: React.FC<SelectProps> = ({
   );
 };
 
-export default Select;
+export default Select; // Export the Select component for use in other parts of the application.

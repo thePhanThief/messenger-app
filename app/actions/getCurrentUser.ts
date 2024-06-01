@@ -3,24 +3,21 @@ import getSession from "./getSession";
 
 const getCurrentUser = async () => {
   try {
-    const session = await getSession();
+    const session = await getSession(); // Retrieve the current session
+
     if (!session?.user?.email) {
-      return null;
+      return null; // Return null if no session or email is found
     }
 
     const currentUser = await prisma.user.findUnique({
       where: {
-        email: session.user.email as string,
+        email: session.user.email, // Find the user by their email
       },
     });
 
-    if (!currentUser) {
-      return null;
-    }
-
-    return currentUser;
+    return currentUser; // Return the current user
   } catch (error: any) {
-    return null;
+    return null; // Return null in case of an error
   }
 };
 
