@@ -1,21 +1,22 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
 import prisma from "@/app/libs/prismadb";
-import { connect } from "http2";
 import { pusherServer } from "@/app/libs/pusher";
 
 interface IParams {
   conversationId?: string;
 }
 
-// Define an asynchronous POST function to mark messages as seen in a conversation
+// Function to mark messages as seen in a conversation
 export async function POST(request: Request, { params }: { params: IParams }) {
   try {
-    const currentUser = await getCurrentUser(); // Retrieve the current user
-    const { conversationId } = params; // Destructure the conversation ID from parameters
+    // Retrieve the current user
+    const currentUser = await getCurrentUser();
+    const { conversationId } = params;
 
+    // Check if the user is authenticated and has an email
     if (!currentUser?.id || !currentUser?.email) {
-      return new NextResponse("Unauthorized", { status: 401 }); // Return unauthorized if no user is found
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     // Find the conversation with the given ID, including messages and users
@@ -26,21 +27,23 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       include: {
         messages: {
           include: {
-            seen: true, // Include information on users who have seen each message
+            seen: true,
           },
         },
-        users: true, // Include user details
+        users: true,
       },
     });
 
+    // Check if the conversation exists
     if (!conversation) {
-      return new NextResponse("Invalid ID", { status: 400 }); // Return invalid ID if no conversation is found
+      return new NextResponse("Invalid ID", { status: 400 });
     }
 
-    const lastMessage = conversation.messages[conversation.messages.length - 1]; // Get the last message in the conversation
+    const lastMessage = conversation.messages[conversation.messages.length - 1];
 
+    // Return the conversation if there are no messages
     if (!lastMessage) {
-      return NextResponse.json(conversation); // Return the conversation if there are no messages
+      return NextResponse.json(conversation);
     }
 
     // Update the last message to mark it as seen by the current user
@@ -49,13 +52,13 @@ export async function POST(request: Request, { params }: { params: IParams }) {
         id: lastMessage.id,
       },
       include: {
-        sender: true, // Include sender details
-        seen: true, // Include seen information
+        sender: true,
+        seen: true,
       },
       data: {
         seen: {
           connect: {
-            id: currentUser.id, // Connect the current user's ID to the seen field
+            id: currentUser.id,
           },
         },
       },
@@ -67,16 +70,18 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       messages: [updatedMessage],
     });
 
+    // Return the conversation if the message was already seen by the user
     if (lastMessage.seenIds.indexOf(currentUser.id) !== -1) {
-      return NextResponse.json(conversation); // Return the conversation if the message was already seen by the user
+      return NextResponse.json(conversation);
     }
 
     // Trigger a Pusher event to update the message for the conversation
     await pusherServer.trigger(conversationId!, 'message:update', updatedMessage);
 
-    return NextResponse.json(updatedMessage); // Return the updated message
+    // Return the updated message
+    return NextResponse.json(updatedMessage);
   } catch (error: any) {
-    console.log(error, "ERROR_MESSAGES_SEEN"); // Log the error
-    return new NextResponse("Internal Error", { status: 500 }); // Return an internal error response
+    console.log(error, "ERROR_MESSAGES_SEEN");
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

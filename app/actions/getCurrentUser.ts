@@ -1,24 +1,32 @@
 import prisma from "@/app/libs/prismadb";
 import getSession from "./getSession";
 
+// Function to retrieve the current user
 const getCurrentUser = async () => {
   try {
-    const session = await getSession(); // Retrieve the current session
+    // Retrieve the current session
+    const session = await getSession();
 
+    // Check if the session has a user email
     if (!session?.user?.email) {
-      return null; // Return null if no session or email is found
+      // Return null if no session or email is found
+      return null;
     }
 
+    // Find the user by their email
     const currentUser = await prisma.user.findUnique({
       where: {
-        email: session.user.email, // Find the user by their email
+        email: session.user.email,
       },
     });
 
-    return currentUser; // Return the current user
+    // Return the current user
+    return currentUser;
   } catch (error: any) {
-    return null; // Return null in case of an error
+    // Return null in case of an error
+    return null;
   }
 };
 
+// Export the function
 export default getCurrentUser;

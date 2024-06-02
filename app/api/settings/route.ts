@@ -1,22 +1,22 @@
-// Import helper function to get the currently authenticated user
 import getCurrentUser from "@/app/actions/getCurrentUser";
-// Import NextResponse for API response handling
 import { NextResponse } from "next/server";
-// Import the Prisma client instance for database interactions
 import prisma from "@/app/libs/prismadb"
 
-// Define an asynchronous POST function to handle user settings update
+// Asynchronous POST function to handle user settings update
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser(); // Retrieve the current user
-    const body = await request.json(); // Parse the request body
-    const {
-      name,
-      image
-    } = body; // Destructure the necessary fields from the body
+    // Retrieve the current user
+    const currentUser = await getCurrentUser();
+    
+    // Parse the request body
+    const body = await request.json(); 
+    
+    // Destructure the necessary fields from the body
+    const { name, image } = body;
 
+    // Check if the user is authenticated
     if (!currentUser?.id) {
-      return new NextResponse('Unauthorized', { status: 401 }); // Return unauthorized if no user is found
+      return new NextResponse('Unauthorized', { status: 401 });
     }
 
     // Update the user in the database
@@ -29,10 +29,11 @@ export async function POST(request: Request) {
         name: name,
       },
     });
-
-    return NextResponse.json(updatedUser); // Return the updated user
+    
+    // Return the updated user
+    return NextResponse.json(updatedUser); 
   } catch (error: any) {
     console.log(error, 'SETTINGS_ERROR');
-    return new NextResponse('Internal Error', { status: 500 }); // Return an internal error response
+    return new NextResponse('Internal Error', { status: 500 });
   }
 }

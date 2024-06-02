@@ -1,42 +1,49 @@
-"use client"; // Directive to indicate that the file is intended for client-side execution only.
+"use client"; 
 
-import Avatar from "@/app/components/Avatar"; // Importing the Avatar component.
-import LoadingModal from "@/app/components/LoadingModal"; // Importing the LoadingModal component for loading animations.
-import { User } from "@prisma/client"; // Importing the User type from Prisma.
-import axios from "axios"; // Importing axios for making HTTP requests.
-import { useRouter } from "next/navigation"; // Importing useRouter from Next.js for navigation.
-import { useCallback, useState } from "react"; // Importing React hooks.
+import Avatar from "@/app/components/Avatar";
+import LoadingModal from "@/app/components/LoadingModal";
+import { User } from "@prisma/client";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 
-// Defining props type for UserBox component.
 interface UserBoxProps {
-  data: User; // User data to be passed as a prop.
+  data: User; 
 }
 
 // Creating the UserBox component.
 const UserBox: React.FC<UserBoxProps> = ({ data }) => {
-  const router = useRouter(); // Initializing the router object.
-  const [isLoading, setIsLoading] = useState(false); // State for loading status.
+  // Initializing the router object.
+  const router = useRouter(); 
+  
+  // State for loading status.
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Memoized callback for click events.
   const handleClick = useCallback(() => {
-    setIsLoading(true); // Set loading status to true.
-
+    // Set loading status to true.
+    setIsLoading(true); 
     // Perform a POST request to start a conversation.
     axios
       .post("/api/conversations", {
-        userId: data.id, // Send the user's ID in the request body.
+         // Send the user's ID in the request body.
+        userId: data.id,
       })
       .then((data) => {
-        router.push(`/conversations/${data.data.id}`); // Navigate to the conversation page.
+        // Navigate to the conversation page.
+        router.push(`/conversations/${data.data.id}`); 
       })
-      .finally(() => setIsLoading(false)); // Reset loading status.
+      // Reset loading status.
+      .finally(() => setIsLoading(false));
   }, [data, router]);
 
   return (
     <>
-      {isLoading && <LoadingModal />} {/* Show loading animation if loading */}
+      {/* Show loading animation if loading */}
+      {isLoading && <LoadingModal />} 
       <div
-        onClick={handleClick} // Handle click to start a conversation.
+      // Handle click to start a conversation.
+        onClick={handleClick} 
         className="
           w-full
           relative
@@ -50,7 +57,8 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
           cursor-pointer
         "
       >
-        <Avatar user={data} /> {/* Display the user's avatar */}
+        {/* Display the user's avatar */}
+        <Avatar user={data} />
         <div className="min-w-0 flex-1">
           <div className="focus:outline-none">
             <div
@@ -68,7 +76,8 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
                   text-gray-900
                 "
               >
-                {data.name} {/* Display the user's name */}
+                {/* Display the user's name */}
+                {data.name}
               </p>
             </div>
           </div>
@@ -78,4 +87,4 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
   );
 };
 
-export default UserBox; // Export the UserBox component.
+export default UserBox;

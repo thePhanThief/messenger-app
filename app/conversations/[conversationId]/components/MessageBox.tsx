@@ -1,19 +1,20 @@
 "use client";
 
-// Import necessary components and hooks
-import Avatar from "@/app/components/Avatar"; // Import Avatar component
-import { FullMessageType } from "@/app/types"; // Import FullMessageType type
-import clsx from "clsx"; // Import clsx for conditional class names
-import { useSession } from "next-auth/react"; // Import useSession from next-auth/react for session management
-import { format } from "date-fns"; // Import format from date-fns for date formatting
-import Image from "next/image"; // Import Image component from Next.js
-import { useState } from "react"; // Import useState hook from React
-import ImageModal from "./ImageModal"; // Import ImageModal component
+import Avatar from "@/app/components/Avatar"; 
+import { FullMessageType } from "@/app/types"; 
+import clsx from "clsx"; 
+import { useSession } from "next-auth/react"; 
+import { format } from "date-fns"; 
+import Image from "next/image"; 
+import { useState } from "react"; 
+import ImageModal from "./ImageModal"; 
 
 // Define properties for the MessageBox component
 interface MessageBoxProps {
-  data: FullMessageType; // Message data
-  isLast?: boolean; // Boolean to check if this is the last message
+  // Message data
+  data: FullMessageType; 
+  // Boolean to check if this is the last message
+  isLast?: boolean; 
 }
 
 // Create the MessageBox component
@@ -21,56 +22,71 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   data,
   isLast
 }) => {
-  const session = useSession(); // Get the current session
-  const [imageModalOpen, setImageModalOpen] = useState(false); // State to handle image modal open/close
+  // Get the current session
+  const session = useSession(); 
+  // State to handle image modal open/close
+  const [imageModalOpen, setImageModalOpen] = useState(false); 
 
-  const isOwn = session?.data?.user?.email === data?.sender?.email; // Check if the message is sent by the current user
+  // Check if the message is sent by the current user
+  const isOwn = session?.data?.user?.email === data?.sender?.email; 
+  // List of users who have seen the message
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
-    .join(', '); // List of users who have seen the message
+    .join(', '); 
 
   const container = clsx(
     "flex gap-3 p-4",
-    isOwn && "justify-end" // Align message to the right if it's sent by the current user
+    // Align message to the right if it's sent by the current user
+    isOwn && "justify-end" 
   );
 
-  const avatar = clsx(isOwn && "order-2"); // Position avatar based on the sender
+  const avatar = clsx(isOwn && "order-2"); 
 
   const body = clsx(
     "flex flex-col gap-2",
-    isOwn && "items-end" // Align message body to the right if it's sent by the current user
+    // Align message body to the right if it's sent by the current user
+    isOwn && "items-end" 
   );
 
   const message = clsx(
     "text-sm w-fit overflow-hidden",
-    isOwn ? 'bg-sky-500 text-white' : 'bg-gray-100', // Apply different styles based on the sender
-    data.image ? 'rounded-md p-0' : 'rounded-full py-2 px-3' // Apply different styles if the message contains an image
+    // Apply different styles based on the sender
+    isOwn ? 'bg-sky-500 text-white' : 'bg-gray-100', 
+    // Apply different styles if the message contains an image
+    data.image ? 'rounded-md p-0' : 'rounded-full py-2 px-3' 
   );
 
   return (
     <div className={container}>
       <div className={avatar}>
-        <Avatar user={data.sender} /> {/* Display sender's avatar */}
+        {/* Display sender's avatar */}
+        <Avatar user={data.sender} /> 
       </div>
       <div className={body}>
         <div className="flex items-center gap-1">
           <div className="text-sm text-gray-500">
-            {data.sender.name} {/* Display sender's name */}
+            {/* Display sender's name */}
+            {data.sender.name} 
           </div>
           <div className="text-xs text-gray-400">
-            {format(new Date(data.createdAt), 'p')} {/* Display message timestamp */}
+            {/* Display message timestamp */}
+            {format(new Date(data.createdAt), 'p')} 
           </div>
         </div>
         <div className={message}>
           <ImageModal
-            src={data.image} // Source URL of the image
-            isOpen={imageModalOpen} // Control modal open state
-            onClose={() => setImageModalOpen(false)} // Handle modal close
+            // Source URL of the image
+            src={data.image} 
+            // Control modal open state
+            isOpen={imageModalOpen} 
+            // Handle modal close
+            onClose={() => setImageModalOpen(false)} 
           />
           {data.image ? (
             <Image
-              onClick={() => setImageModalOpen(true)} // Handle image click to open modal
+              // Handle image click to open modal
+              onClick={() => setImageModalOpen(true)} 
               alt="Image"
               height="288"
               width="288"
@@ -84,7 +100,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               "
             />
           ) : (
-            <div>{data.body}</div> // Display message body if no image is present
+            // Display message body if no image is present
+            <div>{data.body}</div> 
           )}
         </div>
         {isLast && isOwn && seenList.length > 0 && (
@@ -95,7 +112,8 @@ const MessageBox: React.FC<MessageBoxProps> = ({
               text-gray-500
             "
           >
-            {`Seen by ${seenList}`} {/* Display seen by list */}
+            {/* Display seen by list */}
+            {`Seen by ${seenList}`} 
           </div>
         )}
       </div>
@@ -103,4 +121,5 @@ const MessageBox: React.FC<MessageBoxProps> = ({
   );
 };
 
-export default MessageBox; // Export the MessageBox component
+// Export the MessageBox component
+export default MessageBox; 

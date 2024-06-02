@@ -1,34 +1,37 @@
-// Import the Prisma client instance from a local module for database operations.
 import prisma from "@/app/libs/prismadb";
-
-// Import a helper function to get the currently authenticated user.
 import getCurrentUser from "./getCurrentUser";
 
-// Define an asynchronous function to retrieve a conversation by its ID.
+// Function to retrieve a conversation by its ID
 const getConversationById = async (conversationId: string) => {
   try {
-    // Retrieve the current user and ensure they have a valid email.
+    // Retrieve the current user
     const currentUser = await getCurrentUser();
+
+    // Check if the user is authenticated and has an email
     if (!currentUser?.email) {
-      return null; // Return null if no authenticated user is found or if they lack an email.
+      // Return null if no authenticated user is found or if they lack an email
+      return null;
     }
 
-    // Fetch the conversation from the database that matches the given ID.
+    // Fetch the conversation from the database using the conversation ID
     const conversation = await prisma.conversation.findUnique({
       where: {
-        id: conversationId, // Specify the conversation ID as the condition for the query.
+        // Condition to find the specific conversation
+        id: conversationId, 
       },
       include: {
-        users: true, // Include related user data in the response.
+        // Include related users in the conversation
+        users: true, 
       },
     });
 
-    // Return the fetched conversation.
+    // Return the fetched conversation
     return conversation;
   } catch (error: any) {
-    return null; // Return null in case of an error.
+    // Return null in case of an error
+    return null;
   }
 };
 
-// Export the function to make it available for import in other parts of the application.
+// Export the function
 export default getConversationById;

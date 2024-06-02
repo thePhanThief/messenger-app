@@ -1,6 +1,5 @@
 "use client";
 
-// Import necessary hooks and libraries
 import Button from "@/app/components/Button";
 import Modal from "@/app/components/Modal";
 import Select from "@/app/components/inputs/Select";
@@ -25,8 +24,10 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const router = useRouter(); // Get the router instance
-  const [isLoading, setIsLoading] = useState(false); // State to manage loading state
+  // Get the router instance
+  const router = useRouter(); 
+  // State to manage loading state
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Set up the form using react-hook-form
   const {
@@ -37,29 +38,38 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
     formState: { errors },
   } = useForm<FieldValues>({
     defaultValues: {
-      name: "", // Default value for the group name
-      members: [], // Default value for the members array
+      // Default value for the group name
+      name: "", 
+      // Default value for the members array
+      members: [], 
     },
   });
 
-  const members = watch("members"); // Watch the members field
+  // Watch the members field
+  const members = watch("members"); 
 
   // Handle form submission
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    setIsLoading(true); // Set loading state to true
+    // Set loading state to true
+    setIsLoading(true); 
 
     axios
       .post("/api/conversations", {
         ...data,
-        isGroup: true, // Indicate that this is a group conversation
+        // Indicate that this is a group conversation
+        isGroup: true, 
       })
       .then(() => {
-        router.refresh(); // Refresh the page on success
-        onClose(); // Close the modal on success
+        // Refresh the page on success
+        router.refresh(); 
+        // Close the modal on success
+        onClose(); 
       })
-      .catch(() => toast.error("Something went wrong")) // Show error toast on failure
+      // Show error toast on failure
+      .catch(() => toast.error("Something went wrong")) 
       .finally(() => {
-        setIsLoading(false); // Set loading state to false
+        // Set loading state to false
+        setIsLoading(false); 
       });
   };
 
@@ -76,26 +86,37 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
             </p>
             <div className="mt-10 flex flex-col gap-y-8">
               <Input
-                register={register} // Register the input field with react-hook-form
-                label="name" // Label for the input field
-                id="name" // ID for the input field
-                disabled={isLoading} // Disable the input field if loading
-                required // Mark the input field as required
-                errors={errors} // Pass any validation errors
+                // Register the input field with react-hook-form
+                register={register} 
+                // Label for the input field
+                label="name" 
+                // ID for the input field
+                id="name" 
+                // Disable the input field if loading
+                disabled={isLoading} 
+                // Mark the input field as required
+                required 
+                // Pass any validation errors
+                errors={errors} 
               />
               <Select
-                disabled={isLoading} // Disable the select field if loading
-                label="Members" // Label for the select field
+                // Disable the select field if loading
+                disabled={isLoading} 
+                // Label for the select field
+                label="Members" 
+                // Map users to options for the select field
                 options={users.map((user) => ({
                   value: user.id,
                   label: user.name,
-                }))} // Map users to options for the select field
+                }))} 
+                // Handle value change for the select field
                 onChange={(value) =>
                   setValue("members", value, {
                     shouldValidate: true,
                   })
-                } // Handle value change for the select field
-                value={members} // Value of the select field
+                } 
+                // Value of the select field
+                value={members} 
               />
             </div>
           </div>
@@ -121,4 +142,4 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
   );
 };
 
-export default GroupChatModal; // Export the GroupChatModal component
+export default GroupChatModal; 

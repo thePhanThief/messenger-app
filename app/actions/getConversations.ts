@@ -1,37 +1,48 @@
 import prisma from "@/app/libs/prismadb";
 import getCurrentUser from "./getCurrentUser";
 
+// Function to retrieve all conversations of the current user
 const getConversations = async () => {
-  const currentUser = await getCurrentUser(); // Retrieve the current user
+  // Retrieve the current user
+  const currentUser = await getCurrentUser();
 
+  // Return an empty array if no authenticated user is found
   if (!currentUser?.id) {
-    return []; // Return an empty array if no authenticated user is found
+    return [];
   }
 
   try {
+    // Fetch the conversations from the database
     const conversations = await prisma.conversation.findMany({
       orderBy: {
-        lastMessageAt: 'desc' // Order by the last message time in descending order
+        // Order by the last message time in descending order
+        lastMessageAt: 'desc' 
       },
       where: {
         userIds: {
-          has: currentUser.id // Include conversations where the current user is a participant
+          // Include conversations where the current user is a participant
+          has: currentUser.id 
         }
       },
       include: {
-        users: true, // Include related user data
+        // Include related user data
+        users: true, 
         messages: {
           include: {
-            sender: true, // Include the sender of each message
-            seen: true // Include users who have seen each message
+            // Include the sender of each message
+            sender: true, 
+            // Include users who have seen each message
+            seen: true 
           }
         }
       }
     });
 
-    return conversations; // Return the fetched conversations
+    // Return the fetched conversations
+    return conversations; 
   } catch (error: any) {
-    return []; // Return an empty array in case of an error
+    // Return an empty array in case of an error
+    return [];
   }
 };
 

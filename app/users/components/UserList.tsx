@@ -1,11 +1,10 @@
-"use client"; // Directive to indicate that the file is intended for client-side execution only.
+"use client"
 
-import { User } from "@prisma/client"; // Importing the User type from Prisma.
-import UserBox from "./UserBox"; // Importing the UserBox component.
+import { User } from "@prisma/client"; 
+import UserBox from "./UserBox"; 
 
 interface UserListProps {
-  // Defining props type for UserList component.
-  items: User[]; // Array of User items to be passed as a prop.
+  items: User[]; 
 }
 
 // Creating the UserList component.
@@ -38,13 +37,16 @@ const UserList: React.FC<UserListProps> = ({ items }) => {
               py-4
             "
           >
-            People {/* Title for the user list */}
+            {/* Title for the user list */}
+            People 
           </div>
         </div>
         {items.map((item) => (
           <UserBox
-            key={item.id} // Unique key for each user
-            data={item} // Pass user data to the UserBox component
+            // Unique key for each user
+            key={item.id}
+            // Pass user data to the UserBox component
+            data={item}
           />
         ))}
       </div>
@@ -52,4 +54,4 @@ const UserList: React.FC<UserListProps> = ({ items }) => {
   );
 };
 
-export default UserList; // Export the UserList component.
+export default UserList; 

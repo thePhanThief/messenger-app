@@ -7,20 +7,21 @@ interface IParams {
   conversationId?: string;
 }
 
-// Define an asynchronous DELETE function to handle conversation deletion
+// Function to handle conversation deletion
 export async function DELETE(
   request: Request,
   { params }: { params: IParams }
 ) {
   try {
-    const { conversationId } = params; // Destructure the conversation ID from parameters
-    const currentUser = await getCurrentUser(); // Retrieve the current user
+    const { conversationId } = params; 
+    const currentUser = await getCurrentUser(); 
 
+    // Check if the user is authenticated
     if (!currentUser?.id) {
-      return new NextResponse("Unauthorized", { status: 401 }); // Return unauthorized if no user is found
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Find the existing conversation with the given ID, including user details
+    // Find the existing conversation with the given ID
     const existingConversation = await prisma?.conversation.findUnique({
       where: {
         id: conversationId,
@@ -30,8 +31,9 @@ export async function DELETE(
       },
     });
 
+    // Check if the conversation exists
     if (!existingConversation) {
-      return new NextResponse("Invalid ID", { status: 400 }); // Return invalid ID if no conversation is found
+      return new NextResponse("Invalid ID", { status: 400 });
     }
 
     // Delete the conversation if the current user is a participant
@@ -51,9 +53,10 @@ export async function DELETE(
       }
     });
 
-    return NextResponse.json(deletedConversation); // Return the deleted conversation
+    // Return the deleted conversation
+    return NextResponse.json(deletedConversation); 
   } catch (error: any) {
-    console.log(error, "ERROR_CONVERSATION_DELETE"); // Log the error
-    return new NextResponse("Internal Error", { status: 500 }); // Return an internal error response
+    console.log(error, "ERROR_CONVERSATION_DELETE"); 
+    return new NextResponse("Internal Error", { status: 500 }); 
   }
 }

@@ -1,33 +1,41 @@
-// Import necessary types and components from Next.js and other libraries
-import type { Metadata } from "next"; // Import the Metadata type from Next.js
-import { Inter } from "next/font/google"; // Import the Inter font from Google Fonts
-import "./globals.css"; // Import global CSS styles
-import ToasterContext from "./context/ToasterContext"; // Import ToasterContext for managing toast notifications
-import AuthContext from "./context/AuthContext"; // Import AuthContext for managing authentication context
-import ActiveStatus from "./components/ActiveStatue"; // Import ActiveStatus component for managing user activity status
+import type { Metadata } from "next"; 
+import { Inter } from "next/font/google"; 
+import "./globals.css"; 
+import ToasterContext from "./context/ToasterContext";
+import AuthContext from "./context/AuthContext"; 
+import ActiveStatus from "./components/ActiveStatue"; 
 
 // Initialize the Inter font with Latin subset
 const inter = Inter({ subsets: ["latin"] });
 
 // Define metadata for the application
 export const metadata: Metadata = {
-  title: "Messenger", // Title of the application
-  description: "Messenger", // Description of the application
+  // Title of the application
+  title: "Messenger", 
+  // Description of the application
+  description: "Messenger", 
 };
 
 // Define the RootLayout component which wraps the entire application
 export default function RootLayout({
-  children, // ReactNode elements to be rendered as children within the component
+  // ReactNode elements to be rendered as children within the component
+  children, 
 }: Readonly<{
-  children: React.ReactNode; // TypeScript type for React children props
+  // TypeScript type for React children props
+  children: React.ReactNode; 
 }>) {
   return (
     <html lang="en"> {/* Set the language attribute for the HTML document */}
-      <body className={inter.className}> {/* Apply the Inter font to the body */}
-        <AuthContext> {/* Wrap the application in AuthContext for authentication management */}
-          <ToasterContext /> {/* Include ToasterContext for managing toast notifications */}
-          <ActiveStatus /> {/* Include ActiveStatus to manage user activity status */}
-          {children} {/* Render children elements passed to this component */}
+    {/* Apply the Inter font to the body */}
+      <body className={inter.className}> 
+         {/* Wrap the application in AuthContext for authentication management */}
+        <AuthContext>
+          {/* Include ToasterContext for managing toast notifications */}
+          <ToasterContext /> 
+          {/* Include ActiveStatus to manage user activity status */}
+          <ActiveStatus /> 
+          {/* Render childreapp\layout.tsxn elements passed to this component */}
+          {children} 
         </AuthContext>
       </body>
     </html>

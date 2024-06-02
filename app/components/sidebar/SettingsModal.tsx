@@ -1,23 +1,25 @@
 "use client";
 
-// Import necessary modules and components
-import { User } from "@prisma/client"; // Import User type from Prisma client
-import axios from "axios"; // Import axios for making HTTP requests
-import { useRouter } from "next/navigation"; // Import useRouter from next/navigation for client-side routing
-import { useState } from "react"; // Import useState hook from React
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form"; // Import necessary functions and types from react-hook-form
-import toast from "react-hot-toast"; // Import toast for displaying notifications
-import Modal from "../Modal"; // Import Modal component
-import Input from "../inputs/input"; // Import Input component
-import Image from "next/image"; // Import Image component from Next.js
-import { CldUploadButton } from "next-cloudinary"; // Import CldUploadButton for handling image uploads with Cloudinary
-import Button from "../Button"; // Import Button component
+import { User } from "@prisma/client"; 
+import axios from "axios"; 
+import { useRouter } from "next/navigation"; 
+import { useState } from "react"; 
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form"; 
+import toast from "react-hot-toast"; 
+import Modal from "../Modal"; 
+import Input from "../inputs/input"; 
+import Image from "next/image"; 
+import { CldUploadButton } from "next-cloudinary";
+import Button from "../Button"; 
 
 // Define the properties for the SettingsModal component
 interface SettingsModalProps {
-  currentUser: User; // The current user object
-  isOpen?: boolean; // Boolean to control if the modal is open
-  onClose: () => void; // Function to handle closing the modal
+  // The current user object
+  currentUser: User; 
+  // Boolean to control if the modal is open
+  isOpen?: boolean; 
+  // Function to handle closing the modal
+  onClose: () => void; 
 }
 
 // Create the SettingsModal component
@@ -57,13 +59,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsLoading(true); // Set loading state to true
 
     axios
-      .post("/api/settings", data) // Post the data to the API
+      // Post the data to the API
+      .post("/api/settings", data) 
       .then(() => {
-        router.refresh(); // Refresh the page on success
-        onClose(); // Close the modal on success
+        // Refresh the page on success
+        router.refresh(); 
+        // Close the modal on success
+        onClose(); 
       })
-      .catch(() => toast.error("Something went wrong")) // Show error toast on failure
-      .finally(() => setIsLoading(false)); // Reset loading state
+      // Show error toast on failure
+      .catch(() => toast.error("Something went wrong")) 
+      // Reset loading state
+      .finally(() => setIsLoading(false)); 
   };
 
   return (
@@ -141,4 +148,4 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   );
 };
 
-export default SettingsModal; // Export the SettingsModal component
+export default SettingsModal; 

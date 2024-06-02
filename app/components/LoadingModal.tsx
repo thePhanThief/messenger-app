@@ -1,9 +1,9 @@
 "use client";
 
 // Import necessary modules and components
-import React, { Fragment } from "react"; // Importing React and Fragment
-import { Dialog, Transition } from "@headlessui/react"; // Importing Dialog and Transition from headlessui
-import { ClipLoader } from "react-spinners"; // Importing ClipLoader from react-spinners
+import React, { Fragment } from "react"; 
+import { Dialog, Transition } from "@headlessui/react"; 
+import { ClipLoader } from "react-spinners"; 
 
 // LoadingModal component definition
 const LoadingModal = () => {
@@ -15,22 +15,22 @@ const LoadingModal = () => {
         {/* Transition.Child handles the enter and leave transitions */}
         <Transition.Child
           as={Fragment}
-          enter="ease-out duration-300" // Transition on entering
-          enterFrom="opacity-0" // Start state of entering transition
-          enterTo="opacity-100" // End state of entering transition
-          leave="ease-in duration-200" // Transition on leaving
-          leaveFrom="ease-in duration-200" // Start state of leaving transition
-          leaveTo="opacity-0" // End state of leaving transition
+          enter="ease-out duration-300" 
+          enterFrom="opacity-0" 
+          enterTo="opacity-100" 
+          leave="ease-in duration-200" 
+          leaveFrom="ease-in duration-200" 
+          leaveTo="opacity-0" 
         >
           {/* Background overlay */}
           <div
             className="
-                    fixed
-                    inset-0
-                    bg-gray-100
-                    bg-opacity-50
-                    transition-opacity
-                    "
+              fixed
+              inset-0
+              bg-gray-100
+              bg-opacity-50
+              transition-opacity
+            "
           />
         </Transition.Child>
 
@@ -41,7 +41,7 @@ const LoadingModal = () => {
             inset-0
             z-10
             overflow-y-auto
-            "
+          "
         >
           <div
             className="
@@ -51,11 +51,12 @@ const LoadingModal = () => {
               justify-center
               p-3
               text-center
-              "
+            "
           >
             {/* Dialog panel for the loader */}
-            <Dialog.Panel >
-              <ClipLoader size={40} color="#0284c7" /> {/* Spinner loader */}
+            <Dialog.Panel>
+              {/* Spinner loader */}
+              <ClipLoader size={40} color="#0284c7" /> 
             </Dialog.Panel>
           </div>
         </div>
@@ -64,4 +65,5 @@ const LoadingModal = () => {
   );
 };
 
-export default LoadingModal; // Exporting the LoadingModal component
+// Exporting the LoadingModal component
+export default LoadingModal; 

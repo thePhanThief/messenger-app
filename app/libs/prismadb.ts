@@ -1,4 +1,3 @@
-// Import the PrismaClient from the @prisma/client package
 import { PrismaClient } from "@prisma/client";
 
 // Declare a global variable to hold the PrismaClient instance

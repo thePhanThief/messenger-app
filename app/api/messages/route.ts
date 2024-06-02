@@ -6,16 +6,21 @@ import { pusherServer } from "@/app/libs/pusher";
 // Asynchronous POST function to handle API requests for creating a new message
 export async function POST(request: Request) {
   try {
-    const currentUser = await getCurrentUser(); // Get the current user details
-    const body = await request.json(); // Parse the JSON body from the request
+    // Get the current user details
+    const currentUser = await getCurrentUser();
+    
+    // Parse the JSON body from the request
+    const body = await request.json();
+    
+    // Destructure necessary properties from the body
     const {
       message,
       image,
       conversationId
-    } = body; // Destructure necessary properties from the body
+    } = body;
 
+    // If the current user is not authenticated, return a 401 Unauthorized response
     if (!currentUser?.id || !currentUser?.email) {
-      // If the current user is not authenticated, return a 401 Unauthorized response
       return new NextResponse('Unauthorized', { status: 401 });
     }
 

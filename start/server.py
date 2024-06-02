@@ -7,7 +7,8 @@ import subprocess
 import time
 from queue import Queue
 
-credentials_file = "approved_credentials.json"  # File to store approved credentials
+# File to store approved credentials
+credentials_file = "approved_credentials.json"
 admin_credentials_file = "approved_admin.json"
 
 # Load approved credentials from the file
@@ -24,29 +25,35 @@ def save_credentials(credentials):
 
 approved_credentials = load_credentials(credentials_file)
 admin_credentials = load_credentials(admin_credentials_file)
-pending_clients = Queue()  # Queue for pending client approvals
+
+# Queue for pending client approvals
+pending_clients = Queue()
 admin_socket = None
-admin_connected = threading.Event()  # Event to indicate if an admin is connected
+
+# Event to indicate if an admin is connected
+admin_connected = threading.Event()
 current_client = None
-client_sockets = {}  # Dictionary to store client sockets
+
+# Dictionary to store client sockets
+client_sockets = {}
 
 # Function to send a message through the socket
 def send_message(sock, message):
     try:
-        sock.sendall((message + '\n').encode('utf-8'))  # Send message with newline character
+        sock.sendall((message + '\n').encode('utf-8'))
     except Exception as e:
         print(f"Error sending message: {e}")
 
 # Function to receive a message from the socket
 def receive_message(sock):
-    data = b''  # Initialize an empty byte string to store received data
+    data = b''
     try:
-        while not data.endswith(b'\n'):  # Continue receiving until newline character is found
-            part = sock.recv(1024)  # Receive data in chunks of 1024 bytes
+        while not data.endswith(b'\n'):
+            part = sock.recv(1024)
             if not part:
-                break  # Break if no more data is received
+                break
             data += part
-        message = data.decode('utf-8').strip()  # Decode received data to string and strip any extra whitespace
+        message = data.decode('utf-8').strip()
         return message
     except socket.error as e:
         print(f"Error receiving message: {e}")
@@ -55,21 +62,6 @@ def receive_message(sock):
 # Function to generate a random challenge string
 def generate_challenge():
     return os.urandom(16).hex()
-
-# Function to run the npm development server
-def run_npm_dev():
-    env = os.environ.copy()
-    env['SECURITY_PASSED'] = 'true'
-    subprocess.Popen(["npm", "run", "dev"], env=env, shell=True)
-
-# Function to check if the server is running on a specific host and port
-def is_server_running(host='127.0.0.1', port=3000):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        try:
-            s.connect((host, port))
-            return True
-        except ConnectionError:
-            return False
 
 # Function to handle admin connections
 def handle_admin(admin_socket):
@@ -147,18 +139,21 @@ def handle_admin(admin_socket):
 def admin_command_handler(admin_socket):
     global pending_clients, admin_connected, approved_credentials, current_client
 
+    # Function to periodically check the queue for pending clients
     def check_queue_periodically():
         while admin_connected.is_set():
             if not pending_clients.empty() and current_client is None:
                 current_client = pending_clients.get()
                 client_socket, client_username, client_hashed_password = current_client
-                if client_socket.fileno() != -1:  # Only notify if the client socket is open
+                 # Only notify if the client socket is open
+                if client_socket.fileno() != -1: 
                     send_message(admin_socket, f"Next client '{client_username}' is waiting for approval. Type /approve or /disapprove:")
                     send_message(client_socket, "You can now message the admin.")
                 else:
                     current_client = None
                     continue
-            time.sleep(1)  # Check every second
+            # Check every second
+            time.sleep(1) 
 
     # Start the periodic queue check in a separate thread
     threading.Thread(target=check_queue_periodically).start()
@@ -168,25 +163,18 @@ def admin_command_handler(admin_socket):
             try:
                 message = receive_message(admin_socket)
                 if message == "":
-                    continue  # Ignore empty messages (keep-alive)
+                    # Ignore empty messages (keep-alive)
+                    continue  
                 if message.startswith('/approve') and current_client:
                     client_socket, client_username, client_hashed_password = current_client
-                    if client_socket.fileno() == -1:  # Skip if the client socket is closed
+                     # Skip if the client socket is closed
+                    if client_socket.fileno() == -1: 
                         send_message(admin_socket, "The client has disconnected unexpectedly.")
                         current_client = None
                         continue
                     approved_credentials[client_username] = client_hashed_password
                     save_credentials(approved_credentials)
-                    
-                    if not is_server_running():
-                        threading.Thread(target=run_npm_dev).start()
-                        time.sleep(10)
-                        if is_server_running():
-                            send_message(client_socket, "Admin approved. Server is running on localhost:3000")
-                        else:
-                            send_message(client_socket, "Admin approved. Server failed to start on localhost:3000")
-                    else:
-                        send_message(client_socket, "Admin approved. Server is running on localhost:3000")
+                    send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/?callbackUrl=%2Fusers")
 
                     client_socket.close()
                     send_message(admin_socket, "Client approved successfully.")
@@ -195,7 +183,8 @@ def admin_command_handler(admin_socket):
 
                 elif message.startswith('/disapprove') and current_client:
                     client_socket, client_username, _ = current_client
-                    if client_socket.fileno() == -1:  # Skip if the client socket is closed
+                     # Skip if the client socket is closed
+                    if client_socket.fileno() == -1: 
                         send_message(admin_socket, "The client has disconnected unexpectedly.")
                         current_client = None
                         notify_next_client_in_queue()
@@ -340,16 +329,7 @@ def handle_client(client_socket, address):
                 return
             
             if username in approved_credentials:
-                send_message(client_socket, "Approved. Connection established.")
-                if not is_server_running():
-                    threading.Thread(target=run_npm_dev).start()
-                    time.sleep(10)
-                    if is_server_running():
-                        send_message(client_socket, "Server is running on localhost:3000")
-                    else:
-                        send_message(client_socket, "Server failed to start on localhost:3000")
-                else:
-                    send_message(client_socket, "Server is already running on localhost:3000")
+                send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/?callbackUrl=%2Fusers")
                 client_socket.close()
                 return
             else:
@@ -365,9 +345,11 @@ def handle_client(client_socket, address):
                 while True:
                     try:
                         message = receive_message(client_socket)
-                        if not message:  # If the message is empty, the client may have disconnected
+                        # If the message is empty, the client may have disconnected
+                        if not message:  
                             break
-                        if message.strip():  # Filter out empty messages
+                          # Filter out empty messages
+                        if message.strip():
                             send_message(admin_socket, f"[{username}] {message}")
                     except socket.error as e:
                         print(f"Error receiving message: {e}")
@@ -433,4 +415,4 @@ def accept_admin_connections(admin_server_socket):
             print("Admin logged in.")
 
 if __name__ == '__main__':
-    start_server()  # Start the server if this script is executed directly
+    start_server() 

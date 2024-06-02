@@ -1,9 +1,7 @@
 "use client";
 
-// Import necessary hooks and libraries
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Conversation, Message, User } from "@prisma/client";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
@@ -13,17 +11,19 @@ import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/GroupAvatar";
 
-// Define the properties for the ConversationBox component
 interface ConversationBoxProps {
   data: FullConversationType;
-  selected?: boolean; // Optional boolean to indicate if the conversation is selected
+  selected?: boolean; 
 }
 
 // Create the ConversationBox component
 const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => {
-  const otherUser = useOtherUser(data); // Get the other user in the conversation
-  const session = useSession(); // Get the current session
-  const router = useRouter(); // Get the router instance
+  // Get the other user in the conversation
+  const otherUser = useOtherUser(data); 
+  // Get the current session
+  const session = useSession(); 
+  // Get the router instance
+  const router = useRouter(); 
 
   // Handle click event to navigate to the conversation
   const handleClick = useCallback(() => {
@@ -66,7 +66,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
 
   return (
     <div
-      onClick={handleClick} // Handle click to navigate to the conversation
+    // Handle click to navigate to the conversation
+      onClick={handleClick} 
       className={clsx(`
         w-full,
         relative
@@ -79,13 +80,16 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
         cursor-pointer
         p-3
       `,
-        selected ? 'bg-neutral-100' : 'bg-white' // Apply selected styles if the conversation is selected
+      // Apply selected styles if the conversation is selected
+        selected ? 'bg-neutral-100' : 'bg-white' 
       )}
     >
       {data.isGroup ? (
-        <AvatarGroup users={data.users} /> // Display group avatar if it's a group conversation
+        // Display group avatar if it's a group conversation
+        <AvatarGroup users={data.users} /> 
       ) : (
-        <Avatar user={otherUser} /> // Display user avatar if it's a single conversation
+        // Display user avatar if it's a single conversation
+        <Avatar user={otherUser} /> 
       )}
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
@@ -104,7 +108,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
                 text-gray-900
               "
             >
-              {data.name || otherUser.name} {/* Display conversation name or other user's name */}
+               {/* Display conversation name or other user's name */}
+              {data.name || otherUser.name}
             </p>
             {lastMessage?.createdAt && (
               <p
@@ -114,7 +119,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
                   font-light
                 "
               >
-                {format(new Date(lastMessage.createdAt), 'p')} {/* Display formatted creation time of the last message */}
+                {/* Display formatted creation time of the last message */}
+                {format(new Date(lastMessage.createdAt), 'p')} 
               </p>
             )}
           </div>
@@ -123,10 +129,12 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
               truncate
               text-sm
             `,
-              hasSeen ? 'text-gray-500' : 'text-black font-medium' // Apply styles based on whether the message has been seen
+            // Apply styles based on whether the message has been seen
+              hasSeen ? 'text-gray-500' : 'text-black font-medium' 
             )}
           >
-            {lastMessageText} {/* Display the last message text */}
+            {/* Display the last message text */}
+            {lastMessageText} 
           </p>
         </div>
       </div>
@@ -134,4 +142,4 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({ data, selected }) => 
   );
 }
 
-export default ConversationBox; // Export the ConversationBox component
+export default ConversationBox; 

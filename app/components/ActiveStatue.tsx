@@ -1,12 +1,15 @@
 "use client";
 
-import useActiveChannel from "../hooks/useActiveChannel"; // Import custom hook to track active channels
+import useActiveChannel from "../hooks/useActiveChannel"; 
 
 // Create the ActiveStatus component
 const ActiveStatus = () => {
-  useActiveChannel(); // Use the custom hook to track active channels
+  // Use the custom hook to track active channels
+  useActiveChannel();
 
-  return null; // The component does not render anything
+  // The component does not render anything
+  return null; 
 };
 
-export default ActiveStatus; // Export the ActiveStatus component
+// Export the ActiveStatus component
+export default ActiveStatus; 

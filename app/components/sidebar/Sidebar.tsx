@@ -1,10 +1,11 @@
-import getCurrentUser from "@/app/actions/getCurrentUser"; // Import function to get the current user
-import MobileFooter from "./MobileFooter"; // Import MobileFooter component
-import DesktopSidebar from "./DesktopSidebar"; // Import DesktopSidebar component
+import getCurrentUser from "@/app/actions/getCurrentUser"; 
+import MobileFooter from "./MobileFooter"; 
+import DesktopSidebar from "./DesktopSidebar"; 
 
 // Create the Sidebar component
 async function Sidebar({ children }: { children: React.ReactNode }) {
-  const currentUser = await getCurrentUser(); // Get the current user
+  // Get the current user
+  const currentUser = await getCurrentUser(); 
 
   return (
     <div className="h-full">
@@ -15,4 +16,4 @@ async function Sidebar({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default Sidebar; // Export the Sidebar component
+export default Sidebar; 

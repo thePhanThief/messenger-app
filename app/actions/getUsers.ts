@@ -1,29 +1,38 @@
 import prisma from "@/app/libs/prismadb";
 import getSession from "./getSession";
 
+// Function to retrieve all users excluding the current user
 const getUsers = async () => {
-  const session = await getSession(); // Retrieve the current session
+  // Retrieve the current session
+  const session = await getSession();
 
+  // Return an empty array if no session or email is found
   if (!session?.user?.email) {
-    return []; // Return an empty array if no session or email is found
+    return [];
   }
 
   try {
+    // Fetch all users from the database excluding the current user
     const users = await prisma.user.findMany({
       orderBy: {
-        createdAt: "desc", // Order users by creation time in descending order
+        // Order users by creation time in descending order
+        createdAt: "desc",
       },
       where: {
         NOT: {
-          email: session.user.email // Exclude the current user from the list
+          // Exclude the current user from the list
+          email: session.user.email,
         },
       },
     });
 
-    return users; // Return the fetched users
+    // Return the fetched users
+    return users;
   } catch (error: any) {
-    return []; // Return an empty array in case of an error
+    // Return an empty array in case of an error
+    return [];
   }
 };
 
+// Export the function
 export default getUsers;

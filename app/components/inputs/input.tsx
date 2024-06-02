@@ -1,7 +1,7 @@
 "use client";
 
-import clsx from "clsx"; // Import clsx for conditionally joining classNames together.
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"; // Import types from react-hook-form.
+import clsx from "clsx"; 
+import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"; 
 
 // Interface for the properties of the input component.
 interface InputProps {
@@ -9,8 +9,10 @@ interface InputProps {
   id: string;
   type?: string;
   required?: boolean;
-  register: UseFormRegister<FieldValues>; // Function to register input in react-hook-form.
-  errors: FieldErrors; // Object containing any errors for the fields in the form.
+  // Function to register input in react-hook-form.
+  register: UseFormRegister<FieldValues>; 
+  // Object containing any errors for the fields in the form.
+  errors: FieldErrors;
   disabled?: boolean;
 }
 
@@ -18,7 +20,8 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({
   label,
   id,
-  type = "text", // Default input type to text if not specified.
+  // Default input type to text if not specified.
+  type = "text", 
   required,
   register,
   errors,
@@ -34,7 +37,8 @@ const Input: React.FC<InputProps> = ({
             leading-6 
             text-gray-900
         "
-        htmlFor={id} // Associates the label with the input field using the id.
+        // Associates the label with the input field using the id.
+        htmlFor={id} 
       >
         {label}
       </label>
@@ -42,9 +46,12 @@ const Input: React.FC<InputProps> = ({
         <input
           id={id}
           type={type}
-          autoComplete={id} // Uses the id for autoComplete attribute to match label.
-          disabled={disabled} // Disables input if disabled prop is true.
-          {...register(id, { required })} // Registers the input for validation and form data management, marking it as required if necessary.
+          // Uses the id for autoComplete attribute to match label.
+          autoComplete={id} 
+          // Disables input if disabled prop is true.
+          disabled={disabled} 
+          // Registers the input for validation and form data management, marking it as required if necessary.
+          {...register(id, { required })} 
           className={clsx(`
           form-input
           block
@@ -63,8 +70,10 @@ const Input: React.FC<InputProps> = ({
           focus:ring-sky-600
           sm:text-sm
           sm:leading-6`,
-            errors[id] && "focus:ring-rose-500", // Adds error styling if there's an error for this field.
-            disabled && "opacity-50 cursor-default" // Adjusts styling if input is disabled.
+            // Adds error styling if there's an error for this field.
+            errors[id] && "focus:ring-rose-500", 
+            // Adjusts styling if input is disabled.
+            disabled && "opacity-50 cursor-default" 
           )}
         />
       </div>
@@ -72,4 +81,5 @@ const Input: React.FC<InputProps> = ({
   );
 };
 
-export default Input; // Export the Input component for use in other parts of the application.
+// Export the Input component for use in other parts of the application.
+export default Input; 

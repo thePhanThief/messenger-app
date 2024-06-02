@@ -9,29 +9,35 @@ import { BsGithub, BsGoogle } from "react-icons/bs";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
-import { FcCallback } from "react-icons/fc";
 import { useRouter } from "next/navigation";
 
+// Define the possible form variants
 type Variant = "LOGIN" | "REGISTER";
 
+// Main component for authentication form
 const AuthForm = () => {
+  // Get current session
   const session = useSession();
+  // Get router for navigation
   const router = useRouter();
-  const [variant, setVariant] = useState<Variant>("LOGIN"); // Variant of button
-  const [isLoading, setIsLoading] = useState(false); // Disable buttons after submitting forms
+  // Variant of form (login/register)
+  const [variant, setVariant] = useState<Variant>("LOGIN");
+  // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Redirect authenticated users to the /users page
   useEffect(() => {
     if (session?.status === "authenticated") {
       router.push("/users");
     }
   }, [session?.status, router]);
 
-  // Change variant of the form
+  // Toggle form variant between login and register
   const toggleVariant = useCallback(() => {
     setVariant((prevVariant) => (prevVariant === "LOGIN" ? "REGISTER" : "LOGIN"));
   }, []);
 
-  // Form handler
+  // Form handler using react-hook-form
   const {
     register,
     handleSubmit,
@@ -48,6 +54,7 @@ const AuthForm = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
 
+    // Handle registration
     if (variant === "REGISTER") {
       axios
         .post("/api/register", data)
@@ -62,6 +69,7 @@ const AuthForm = () => {
         .finally(() => setIsLoading(false));
     }
 
+    // Handle login
     if (variant === "LOGIN") {
       signIn("credentials", {
         ...data,
@@ -100,26 +108,10 @@ const AuthForm = () => {
   };
 
   return (
-    <div
-      className="
-      mt-8
-      sm:mx-auto
-      sm:w-full
-      sm:max-w-md
-    "
-    >
-      <div
-        className="
-        bg-white
-        px-4
-        py-8
-        shadow
-        sm:rounded-lg
-        sm:px-10
-      "
-      >
+    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          {/* Name input */}
+          {/* Name input, displayed only in register variant */}
           {variant === "REGISTER" && (
             <Input
               id="name"
@@ -161,14 +153,7 @@ const AuthForm = () => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span
-                className="
-                bg-white 
-                px-2 
-                text-gray-500"
-              >
-                Or continue with
-              </span>
+              <span className="bg-white px-2 text-gray-500">Or continue with</span>
             </div>
           </div>
 
@@ -184,17 +169,7 @@ const AuthForm = () => {
           </div>
         </div>
 
-        <div
-          className="
-          flex
-          gap-2
-          justify-center
-          text-sm
-          mt-6
-          px-2
-          text-gray-500
-          "
-        >
+        <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
           <div>
             {variant === "LOGIN"
               ? "New to Messenger?"

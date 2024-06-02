@@ -1,6 +1,5 @@
 "use client";
 
-// Import necessary types from react-hook-form
 import {
   FieldError,
   FieldErrors,
@@ -10,12 +9,18 @@ import {
 
 // Define properties for the MessageInput component
 interface MessageInputProps {
-  id: string; // ID for the input element
-  placeholder?: string; // Placeholder text for the input
-  type?: string; // Type of the input element
-  required?: boolean; // Whether the input is required
-  register: UseFormRegister<FieldValues>; // Register function from react-hook-form
-  errors: FieldErrors; // Validation errors from react-hook-form
+  // ID for the input element
+  id: string; 
+  // Placeholder text for the input
+  placeholder?: string; 
+  // Type of the input element
+  type?: string; 
+  // Whether the input is required
+  required?: boolean; 
+  // Register function from react-hook-form
+  register: UseFormRegister<FieldValues>; 
+  // Validation errors from react-hook-form
+  errors: FieldErrors; 
 }
 
 // Create the MessageInput component
@@ -30,24 +35,30 @@ const MessageInput: React.FC<MessageInputProps> = ({
   return (
     <div className="relative w-full">
       <input
-        id={id} // Set input ID
-        type={type} // Set input type
-        autoComplete={id} // Set autocomplete attribute
-        {...register(id, { required })} // Register the input with react-hook-form
-        placeholder={placeholder} // Set placeholder text
+        // Set input ID
+        id={id} 
+        // Set input type
+        type={type} 
+        // Set autocomplete attribute
+        autoComplete={id} 
+        // Register the input with react-hook-form
+        {...register(id, { required })} 
+        // Set placeholder text
+        placeholder={placeholder} 
         className="
-        text-black
-        font-light
-        py-2
-        px-4
-        bg-neutral-100
-        w-full
-        rounded-full
-        focus:outline-none
+          text-black
+          font-light
+          py-2
+          px-4
+          bg-neutral-100
+          w-full
+          rounded-full
+          focus:outline-none
         "
       />
     </div>
   );
 };
 
-export default MessageInput; // Export the MessageInput component
+// Export the MessageInput component
+export default MessageInput; 

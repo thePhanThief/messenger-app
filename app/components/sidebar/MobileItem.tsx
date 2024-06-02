@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link"; // Import Link component from Next.js
-import clsx from "clsx"; // Import clsx for conditionally joining classNames together
+import Link from "next/link"; 
+import clsx from "clsx"; 
 
 interface MobileItemProps {
   href: string;
@@ -19,7 +19,8 @@ const MobileItem: React.FC<MobileItemProps> = ({
 }) => {
   const handleClick = () => {
     if (onClick) {
-      return onClick(); // Call the onClick handler if provided
+      // Call the onClick handler if provided
+      return onClick(); 
     }
   };
 
@@ -41,8 +42,8 @@ const MobileItem: React.FC<MobileItemProps> = ({
         text-gray-500
         hover:text-black
         hover:bg-gray-100
-      `,
-        active && "bg-gray-100 text-black" // Apply active styles if the item is active
+      `,// Apply active styles if the item is active
+        active && "bg-gray-100 text-black" 
       )}
     >
       <Icon className="h-6 w-6" />
@@ -50,4 +51,4 @@ const MobileItem: React.FC<MobileItemProps> = ({
   );
 };
 
-export default MobileItem; // Export the MobileItem component
+export default MobileItem; 

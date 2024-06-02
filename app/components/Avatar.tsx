@@ -1,17 +1,21 @@
 "use client";
 
-import Image from "next/image"; // Import Image component from Next.js
-import { User } from "@prisma/client"; // Import User type from Prisma client
-import useActiveList from "../hooks/useActiveList"; // Import custom hook to get active list of users
+import Image from "next/image"; 
+import { User } from "@prisma/client"; 
+import useActiveList from "../hooks/useActiveList"; 
 
+// Interface for the properties of the Avatar component.
 interface AvatarProps {
-  user?: User; // Define user property which is optional
+  // Define user property which is optional
+  user?: User; 
 }
 
 // Create the Avatar component
 const Avatar: React.FC<AvatarProps> = ({ user }) => {
-  const { members } = useActiveList(); // Get list of active members
-  const isActive = members.indexOf(user?.email!) !== -1; // Check if the user is active
+  // Get list of active members
+  const { members } = useActiveList(); 
+  // Check if the user is active
+  const isActive = members.indexOf(user?.email!) !== -1; 
 
   return (
     <div className="relative">
@@ -29,7 +33,8 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
       >
         <Image
           alt="Avatar"
-          src={user?.image || "/images/placeholder.jpg"} // Set user's image or placeholder
+          // Set user's image or placeholder
+          src={user?.image || "/images/placeholder.jpg"} 
           fill
         />
       </div>
@@ -55,4 +60,5 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   );
 };
 
-export default Avatar; // Export the Avatar component
+// Export the Avatar component
+export default Avatar; 

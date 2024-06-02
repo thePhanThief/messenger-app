@@ -1,20 +1,22 @@
 "use client";
 
 // Import necessary components and hooks
-import Button from "@/app/components/Button"; // Import Button component
-import Modal from "@/app/components/Modal"; // Import Modal component
-import useConversation from "@/app/hooks/useConversation"; // Custom hook to get conversation details
-import { Dialog } from "@headlessui/react"; // Import Dialog from headlessui
-import axios from "axios"; // Import axios for making HTTP requests
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import { useCallback, useState } from "react"; // Import React hooks
-import { toast } from "react-hot-toast"; // Import toast for notifications
-import { FiAlertTriangle } from "react-icons/fi"; // Import alert icon from react-icons
+import Button from "@/app/components/Button"; 
+import Modal from "@/app/components/Modal"; 
+import useConversation from "@/app/hooks/useConversation"; 
+import { Dialog } from "@headlessui/react"; 
+import axios from "axios"; 
+import { useRouter } from "next/navigation"; 
+import { useCallback, useState } from "react"; 
+import { toast } from "react-hot-toast"; 
+import { FiAlertTriangle } from "react-icons/fi"; 
 
 // Define properties for the ConfirmModal component
 interface ConfirmModalProps {
-  isOpen?: boolean; // Boolean to control if the modal is open
-  onClose: () => void; // Function to handle closing the modal
+  // Boolean to control if the modal is open
+  isOpen?: boolean; 
+  // Function to handle closing the modal
+  onClose: () => void; 
 }
 
 // Create the ConfirmModal component
@@ -22,28 +24,40 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   isOpen,
   onClose
 }) => {
-  const router = useRouter(); // Initialize useRouter for navigation
-  const { conversationId } = useConversation(); // Get conversation ID from custom hook
-  const [isLoading, setIsLoading] = useState(false); // State to handle loading state
+  // Initialize useRouter for navigation
+  const router = useRouter(); 
+  // Get conversation ID from custom hook
+  const { conversationId } = useConversation(); 
+  // State to handle loading state
+  const [isLoading, setIsLoading] = useState(false); 
 
   // Handle delete action
   const onDelete = useCallback(() => {
-    setIsLoading(true); // Set loading state to true
+    // Set loading state to true
+    setIsLoading(true); 
 
-    axios.delete(`/api/conversations/${conversationId}`) // Make delete request to API
+    // Make delete request to API
+    axios.delete(`/api/conversations/${conversationId}`) 
     .then(() => {
-      onClose(); // Close the modal on success
-      router.push('/conversations'); // Navigate to conversations page
-      router.refresh(); // Refresh the page
+      // Close the modal on success
+      onClose(); 
+      // Navigate to conversations page
+      router.push('/conversations'); 
+      // Refresh the page
+      router.refresh(); 
     })
-    .catch(() => toast.error('Something went wrong!')) // Show error toast on failure
-    .finally(() => setIsLoading(false)); // Reset loading state
+    // Show error toast on failure
+    .catch(() => toast.error('Something went wrong!')) 
+    // Reset loading state
+    .finally(() => setIsLoading(false)); 
   }, [conversationId, router, onClose]);
 
   return ( 
     <Modal
-      isOpen={isOpen} // Pass isOpen prop to Modal component
-      onClose={onClose} // Pass onClose prop to Modal component
+      // Pass isOpen prop to Modal component
+      isOpen={isOpen} 
+      // Pass onClose prop to Modal component
+      onClose={onClose} 
     >
       <div className="sm:flex sm:items-start">
         <div
@@ -102,16 +116,20 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         "
       >
         <Button
-          disabled={isLoading} // Disable button if loading
+          // Disable button if loading
+          disabled={isLoading} 
           danger
-          onClick={onDelete} // Handle delete action on click
+          // Handle delete action on click
+          onClick={onDelete} 
         >
           Delete
         </Button>
         <Button
-          disabled={isLoading} // Disable button if loading
+          // Disable button if loading
+          disabled={isLoading} 
           secondary
-          onClick={onClose} // Handle close action on click
+          // Handle close action on click
+          onClick={onClose} 
         >
           Cancel
         </Button>
@@ -120,4 +138,5 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
    );
 }
  
-export default ConfirmModal; // Export the ConfirmModal component
+// Export the ConfirmModal component
+export default ConfirmModal; 

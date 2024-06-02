@@ -1,16 +1,18 @@
 "use client";
 
-import useConversation from "@/app/hooks/useConversation"; // Import custom hook to get conversation details
-import useRoutes from "@/app/hooks/useRoutes"; // Import custom hook to get routes
-import MobileItem from "./MobileItem"; // Import MobileItem component
+import useConversation from "@/app/hooks/useConversation"; 
+import useRoutes from "@/app/hooks/useRoutes"; 
+import MobileItem from "./MobileItem"; 
 
 // Create the MobileFooter component
 const MobileFooter = () => {
-  const routes = useRoutes(); // Get routes using the custom hook
-  const { isOpen } = useConversation(); // Get conversation open state using the custom hook
+  const routes = useRoutes(); 
+   // Get conversation open state using the custom hook
+  const { isOpen } = useConversation();
 
   if (isOpen) {
-    return null; // If a conversation is open, do not render the footer
+    // If a conversation is open, do not render the footer
+    return null; 
   }
 
   return (
@@ -41,4 +43,4 @@ const MobileFooter = () => {
   );
 };
 
-export default MobileFooter; // Export the MobileFooter component
+export default MobileFooter; 

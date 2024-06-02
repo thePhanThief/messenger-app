@@ -1,11 +1,17 @@
 "use client";
 
-import useRoutes from "@/app/hooks/useRoutes"; // Import custom hook to get routes
-import { useState } from "react"; // Import useState hook from React
-import DesktopItem from "./DesktopItem"; // Import DesktopItem component
-import Avatar from "../Avatar"; // Import Avatar component
-import { User } from "@prisma/client"; // Import User type from Prisma client
-import SettingsModal from "./SettingsModal"; // Import SettingsModal component
+// Import custom hook to get routes
+import useRoutes from "@/app/hooks/useRoutes";
+// Import useState hook from React
+import { useState } from "react";
+// Import DesktopItem component
+import DesktopItem from "./DesktopItem";
+// Import Avatar component
+import Avatar from "../Avatar";
+// Import User type from Prisma client
+import { User } from "@prisma/client";
+// Import SettingsModal component
+import SettingsModal from "./SettingsModal";
 
 interface DesktopSidebarProps {
   currentUser: User;
@@ -13,8 +19,9 @@ interface DesktopSidebarProps {
 
 // Create the DesktopSidebar component
 const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
-  const routes = useRoutes(); // Get routes using the custom hook
-  const [isOpen, setIsOpen] = useState(false); // State to handle the visibility of the settings modal
+  const routes = useRoutes();
+ // State to handle the visibility of the settings modal
+ const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -70,4 +77,4 @@ const DesktopSidebar: React.FC<DesktopSidebarProps> = ({ currentUser }) => {
   );
 };
 
-export default DesktopSidebar; // Export the DesktopSidebar component
+export default DesktopSidebar;

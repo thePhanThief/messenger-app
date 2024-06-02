@@ -5,6 +5,7 @@ import threading
 def send_message(sock, message):
     try:
         sock.sendall((message + '\n').encode('utf-8'))
+        print(f"Sent: {message}")
     except Exception as e:
         print(f"Error sending message: {e}")
 
@@ -28,7 +29,9 @@ def handle_chat(client_socket, stop_chat):
             try:
                 message = receive_message(client_socket)
                 if not message:
-                    continue
+                    print("Disconnected from server.")
+                    stop_chat.set()
+                    break
                 print(message)
                 if message.startswith("Admin approved") or message.startswith("You were disapproved"):
                     stop_chat.set()
@@ -44,7 +47,7 @@ def handle_chat(client_socket, stop_chat):
     while not stop_chat.is_set():
         try:
             message = input()
-            if message.strip() and not stop_chat.is_set():  # Avoid sending empty messages and check if chat should stop
+            if message.strip() and not stop_chat.is_set():
                 send_message(client_socket, message)
         except Exception as e:
             print(f"Error during chat: {e}")
@@ -92,20 +95,24 @@ def run_client(server_host='127.0.0.1', server_port=65432):
                     send_message(client_socket, "VERIFIED")
                 else:
                     send_message(client_socket, "Verification failed.")
-                    client_socket.close()
                     return
-            elif server_message.startswith("Approved. Connection established.") or server_message.startswith("Waiting for admin approval."):
+            elif server_message.startswith("Waiting for admin approval.") or server_message.startswith("You can now message the admin."):
                 print(server_message)
                 handle_chat(client_socket, stop_chat)
-                return
+            elif server_message.startswith("Please visit"):
+                print(server_message)
+                break
             else:
                 print(server_message)
-                client_socket.close()
-                return
+                break
 
     except Exception as e:
         print("Error:", e)
     finally:
+        try:
+            client_socket.shutdown(socket.SHUT_RDWR)
+        except Exception as e:
+            print(f"Error during shutdown: {e}")
         try:
             client_socket.close()
         except Exception as e:

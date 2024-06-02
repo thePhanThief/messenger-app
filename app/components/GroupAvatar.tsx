@@ -1,16 +1,18 @@
 "use client";
 
-import { User } from "@prisma/client"; // Import User type from Prisma client
-import Image from "next/image"; // Import Image component from Next.js
+import { User } from "@prisma/client"; 
+import Image from "next/image";
 
 // Define the properties for the GroupAvatar component
 interface GroupAvatarProps {
-  users?: User[]; // Define users property which is an array of User objects
+  // Define users property which is an array of User objects
+  users?: User[]; 
 }
 
 // Create the GroupAvatar component
 const GroupAvatar: React.FC<GroupAvatarProps> = ({ users = [] }) => {
-  const slicedUsers = users.slice(0, 3); // Slice the first three users
+  // Slice the first three users
+  const slicedUsers = users.slice(0, 3); 
 
   // Define positions for the avatars
   const positionMap = {
@@ -37,7 +39,8 @@ const GroupAvatar: React.FC<GroupAvatarProps> = ({ users = [] }) => {
         >
           <Image
             fill
-            src={user?.image || "/images/placeholder.jpg"} // Set user's image or placeholder
+            // Set user's image or placeholder
+            src={user?.image || "/images/placeholder.jpg"} 
             alt="Avatar"
           />
         </div>
@@ -46,4 +49,5 @@ const GroupAvatar: React.FC<GroupAvatarProps> = ({ users = [] }) => {
   );
 };
 
-export default GroupAvatar; // Export the GroupAvatar component
+// Export the GroupAvatar component
+export default GroupAvatar; 

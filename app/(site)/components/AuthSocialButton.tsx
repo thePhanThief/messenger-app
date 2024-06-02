@@ -1,13 +1,15 @@
 import { FC } from "react";
 import { IconType } from "react-icons";
 
-// AuthSocialButtonProps props.
+// Props for AuthSocialButton component
 interface AuthSocialButtonProps {
+  // The icon to be displayed in the button
   icon: IconType;
+  // The function to be called when the button is clicked
   onClick: () => void;
 }
 
-// AuthSocialButton object.
+// AuthSocialButton component
 const AuthSocialButton: FC<AuthSocialButtonProps> = ({
   icon: Icon,
   onClick,
@@ -33,6 +35,7 @@ const AuthSocialButton: FC<AuthSocialButtonProps> = ({
         focus:outline-offset-0
       "
     >
+      {/* Render the provided icon */}
       <Icon />
     </button>
   );

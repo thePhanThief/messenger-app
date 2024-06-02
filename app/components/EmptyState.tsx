@@ -21,4 +21,5 @@ const EmptyState = () => {
   );
 };
 
-export default EmptyState; // Export the EmptyState component
+// Export the EmptyState component
+export default EmptyState; 

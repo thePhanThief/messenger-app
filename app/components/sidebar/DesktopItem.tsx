@@ -1,7 +1,9 @@
 "use client";
 
-import clsx from "clsx"; // Import clsx for conditionally joining classNames together
-import Link from "next/link"; // Import Link component from Next.js
+ // Import clsx for conditionally joining classNames together
+import clsx from "clsx";
+// Import Link component from Next.js
+import Link from "next/link"; 
 
 interface DesktopItemProps {
   label: string;

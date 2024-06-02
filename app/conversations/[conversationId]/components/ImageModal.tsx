@@ -1,24 +1,29 @@
 "use client";
 
 // Import necessary components
-import Modal from "@/app/components/Modal"; // Import Modal component
-import Image from "next/image"; // Import Image component from Next.js
+import Modal from "@/app/components/Modal"; 
+import Image from "next/image"; 
 
 // Define properties for the ImageModal component
 interface ImageModalProps {
-  isOpen?: boolean; // Boolean to control if the modal is open
-  onClose: () => void; // Function to handle closing the modal
-  src?: string | null; // Source URL of the image
+  // Boolean to control if the modal is open
+  isOpen?: boolean; 
+  // Function to handle closing the modal
+  onClose: () => void; 
+  // Source URL of the image
+  src?: string | null; 
 }
 
 // Create the ImageModal component
 const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, src }) => {
   if (!src) {
-    return null; // Return null if no source URL is provided
+    // Return null if no source URL is provided
+    return null; 
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}> {/* Render Modal component */}
+    // Render Modal component
+    <Modal isOpen={isOpen} onClose={onClose}> 
       <div className="w-full h-full flex justify-center items-center p-4">
         <Image
           alt="Image"
@@ -26,11 +31,13 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, src }) => {
           width={700}
           height={700}
           objectFit="contain"
-          src={src} // Source URL of the image
+          // Source URL of the image
+          src={src} 
         />
       </div>
     </Modal>
   );
 };
 
-export default ImageModal; // Export the ImageModal component
+// Export the ImageModal component
+export default ImageModal; 

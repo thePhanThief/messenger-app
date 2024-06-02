@@ -1,46 +1,55 @@
 "use client";
 
-// Import necessary modules and components
-import { Conversation, User } from "@prisma/client"; // Import Conversation and User types from Prisma client
-import useOtherUser from "@/app/hooks/useOtherUser"; // Custom hook to get other user details
-import { useMemo, useState } from "react"; // Import React hooks
-import Link from "next/link"; // Import Link component from Next.js
-import { HiChevronLeft, HiEllipsisHorizontal } from "react-icons/hi2"; // Import icons from react-icons/hi2
-import Avatar from "@/app/components/Avatar"; // Import Avatar component
-import AvatarGroup from "@/app/components/GroupAvatar"; // Import GroupAvatar component
-import ProfileDrawer from "./ProfileDrawer"; // Import ProfileDrawer component
-import useActiveList from "@/app/hooks/useActiveList"; // Custom hook to get active users list
+import { Conversation, User } from "@prisma/client"; 
+import useOtherUser from "@/app/hooks/useOtherUser"; 
+import { useMemo, useState } from "react"; 
+import Link from "next/link"; 
+import { HiChevronLeft, HiEllipsisHorizontal } from "react-icons/hi2"; 
+import Avatar from "@/app/components/Avatar"; 
+import AvatarGroup from "@/app/components/GroupAvatar"; 
+import ProfileDrawer from "./ProfileDrawer"; 
+import useActiveList from "@/app/hooks/useActiveList"; 
 
 // Define properties for the Header component
 interface HeaderProps {
+  // Extend Conversation type to include an array of users
   conversation: Conversation & {
-    users: User[]; // Extend Conversation type to include an array of users
+    users: User[]; 
   };
 }
 
 // Create the Header component
 const Header: React.FC<HeaderProps> = ({ conversation }) => {
-  const otherUser = useOtherUser(conversation); // Get other user details
-  const [drawerOpen, setDrawerOpen] = useState(false); // State to handle drawer open/close
+  // Get other user details
+  const otherUser = useOtherUser(conversation); 
+  // State to handle drawer open/close
+  const [drawerOpen, setDrawerOpen] = useState(false); 
 
-  const { members } = useActiveList(); // Get list of active members
-  const isActive = members.indexOf(otherUser?.email!) !== -1; // Check if the other user is active
+  // Get list of active members
+  const { members } = useActiveList(); 
+  // Check if the other user is active
+  const isActive = members.indexOf(otherUser?.email!) !== -1; 
 
   // Determine the status text based on the conversation type and user activity
   const statusText = useMemo(() => {
     if (conversation.isGroup) {
-      return `${conversation.users.length} members`; // Show the number of members if it's a group conversation
+      // Show the number of members if it's a group conversation
+      return `${conversation.users.length} members`; 
     }
-    return isActive ? 'Active' : 'Offline'; // Show active or offline status for individual conversation
+    // Show active or offline status for individual conversation
+    return isActive ? 'Active' : 'Offline'; 
   }, [conversation, isActive]);
 
   return (
     <>
       {/* ProfileDrawer component for viewing user profile */}
       <ProfileDrawer
-        data={conversation} // Pass conversation data
-        isOpen={drawerOpen} // Pass drawer open state
-        onClose={() => setDrawerOpen(false)} // Handle drawer close
+        // Pass conversation data
+        data={conversation} 
+        // Pass drawer open state
+        isOpen={drawerOpen} 
+        // Handle drawer close
+        onClose={() => setDrawerOpen(false)} 
       />
       <div
         className="
@@ -67,18 +76,23 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
               transition
               cursor-pointer
             "
-            href="/conversations" // Link to conversations page
+            // Link to conversations page
+            href="/conversations" 
           >
-            <HiChevronLeft size={32} /> {/* Display back icon */}
+            {/* Display back icon */}
+            <HiChevronLeft size={32} /> 
           </Link>
           {conversation.isGroup ? (
-            <AvatarGroup users={conversation.users} /> // Display group avatar for group conversation
+            // Display group avatar for group conversation
+            <AvatarGroup users={conversation.users} /> 
           ) : (
-            <Avatar user={otherUser} /> // Display avatar for individual conversation
+            // Display avatar for individual conversation
+            <Avatar user={otherUser} /> 
           )}
           <div className="flex flex-col">
             <div>
-              {conversation.name || otherUser.name} {/* Display conversation name or other user's name */}
+              {/* Display conversation name or other user's name */}
+              {conversation.name || otherUser.name} 
             </div>
             <div
               className="
@@ -87,13 +101,15 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
                 text-neutral-500
               "
             >
-              {statusText} {/* Display status text */}
+              {/* Display status text */}
+              {statusText} 
             </div>
           </div>
         </div>
         <HiEllipsisHorizontal
           size={32}
-          onClick={() => setDrawerOpen(true)} // Handle drawer open
+          // Handle drawer open
+          onClick={() => setDrawerOpen(true)} 
           className="
             text-sky-500
             cursor-pointer
@@ -106,4 +122,5 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
   );
 };
 
-export default Header; // Export the Header component
+// Export the Header component
+export default Header; 

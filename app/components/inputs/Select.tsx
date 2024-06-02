@@ -26,20 +26,28 @@ const Select: React.FC<SelectProps> = ({
       </label>
       <div className="mt-2">
         <ReactSelect
-          isDisabled={disabled} // Disables the select if the disabled prop is true.
-          value={value} // Sets the current value of the select.
-          onChange={onChange} // Function to handle value change.
-          isMulti // Allows multiple selections.
-          options={options} // Options to display in the select.
-          menuPortalTarget={document.body} // Ensures the select menu portal is appended to the body.
+          // Disables the select if the disabled prop is true.
+          isDisabled={disabled}
+          // Sets the current value of the select.
+          value={value}
+          // Function to handle value change.
+          onChange={onChange}
+          // Allows multiple selections.
+          isMulti
+          // Options to display in the select.
+          options={options}
+          // Ensures the select menu portal is appended to the body.
+          menuPortalTarget={document.body}
           styles={{
             menuPortal: (base) => ({
               ...base,
-              zIndex: 9999, // Ensures the select menu has a high z-index.
+              // Ensures the select menu has a high z-index.
+              zIndex: 9999,
             }),
           }}
           classNames={{
-            control: () => "text-sm", // Adds custom styling to the control.
+            // Adds custom styling to the control.
+            control: () => "text-sm",
           }}
         />
       </div>
@@ -47,4 +55,5 @@ const Select: React.FC<SelectProps> = ({
   );
 };
 
-export default Select; // Export the Select component for use in other parts of the application.
+// Export the Select component for use in other parts of the application.
+export default Select;

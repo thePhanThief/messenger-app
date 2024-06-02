@@ -1,8 +1,11 @@
-import LoadingModal from "../components/LoadingModal"; // Import LoadingModal component
+import LoadingModal from "../components/LoadingModal";
 
 // Define the Loading component
 const Loading = () => {
-  return <LoadingModal />; // Use the LoadingModal component for /conversations
+  // Use the LoadingModal component for /conversations
+  return <LoadingModal />;
 };
 
-export default Loading; // Export the Loading component
+// Export the Loading component
+export default Loading;
+

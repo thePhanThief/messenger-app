@@ -2,13 +2,14 @@ import socket
 import hashlib
 import threading
 
+# Function to send a message through the socket
 def send_message(sock, message):
     try:
         sock.sendall((message + '\n').encode('utf-8'))
-        print(f"Sent: {message}")
     except Exception as e:
         print(f"Error sending message: {e}")
 
+# Function to receive a message from the socket
 def receive_message(sock):
     data = b''
     try:
@@ -20,9 +21,9 @@ def receive_message(sock):
         message = data.decode('utf-8').strip()
         return message
     except Exception as e:
-        print(f"Error receiving message: {e}")
         return ""
 
+# Function to handle chat messages from the client
 def handle_chat(client_socket, stop_chat):
     def read_messages():
         while not stop_chat.is_set():
@@ -45,7 +46,8 @@ def handle_chat(client_socket, stop_chat):
     while not stop_chat.is_set():
         try:
             message = input()
-            if message.strip() and not stop_chat.is_set():  # Avoid sending empty messages and check if chat should stop
+             # Avoid sending empty messages and check if chat should stop
+            if message.strip() and not stop_chat.is_set(): 
                 send_message(client_socket, message)
         except Exception as e:
             print(f"Error during chat: {e}")
@@ -54,6 +56,7 @@ def handle_chat(client_socket, stop_chat):
 
     read_thread.join()
 
+# Function to run the client
 def run_client(server_host='127.0.0.1', server_port=65432):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:

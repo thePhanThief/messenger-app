@@ -1,7 +1,6 @@
-// Importing required modules and functions
-import getCurrentUser from "@/app/actions/getCurrentUser"; // Import the getCurrentUser function from a local module
-import { NextResponse } from "next/server"; // Import NextResponse for handling responses in Next.js API routes
-import prisma from "@/app/libs/prismadb"; // Import prisma client for database interactions
+import getCurrentUser from "@/app/actions/getCurrentUser"; 
+import { NextResponse } from "next/server";
+import prisma from "@/app/libs/prismadb"; 
 import { pusherServer } from "@/app/libs/pusher";
 
 // Asynchronous POST function to handle API requests
@@ -9,8 +8,10 @@ export async function POST(request: Request) {
   try {
     // Get the current user details
     const currentUser = await getCurrentUser();
+    
     // Parse the JSON body from the request
     const body = await request.json();
+    
     // Destructure necessary properties from the body
     const { userId, isGroup, members, name } = body;
 
