@@ -174,7 +174,7 @@ def admin_command_handler(admin_socket):
                         continue
                     approved_credentials[client_username] = client_hashed_password
                     save_credentials(approved_credentials)
-                    send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/?callbackUrl=%2Fusers")
+                    send_message(client_socket, "Please visit https://secure-chat-jxr767zd3-nadav-salomons-projects.vercel.app/")
 
                     client_socket.close()
                     send_message(admin_socket, "Client approved successfully.")
@@ -329,7 +329,7 @@ def handle_client(client_socket, address):
                 return
             
             if username in approved_credentials:
-                send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/?callbackUrl=%2Fusers")
+                send_message(client_socket, "Please visit https://secure-chat-jxr767zd3-nadav-salomons-projects.vercel.app/")
                 client_socket.close()
                 return
             else:

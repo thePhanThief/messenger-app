@@ -265,7 +265,7 @@ def handle_client(client_socket, address):
                 if approved_credentials[username] == hashed_password:
                     send_message(client_socket, "Login successful. You are now connected to the server.")
                     time.sleep(1)  # Ensure the first message is sent before the second
-                    send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/?callbackUrl=%2Fusers")
+                    send_message(client_socket, "Please visit https://secure-chat-qvlga812w-nadav-salomons-projects.vercel.app/")
                     client_socket.close()
                     return
                 else:
