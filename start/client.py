@@ -6,8 +6,10 @@ import threading
 def send_message(sock, message):
     try:
         sock.sendall((message + '\n').encode('utf-8'))
+        if message:
+            print(f"Sent: {message}")
     except Exception as e:
-        print(f"Error sending message: {e}")
+        return
 
 # Function to receive a message from the socket
 def receive_message(sock):
@@ -25,35 +27,33 @@ def receive_message(sock):
 
 # Function to handle chat messages from the client
 def handle_chat(client_socket, stop_chat):
+    # Thread to read messages from the server
     def read_messages():
         while not stop_chat.is_set():
-            try:
-                message = receive_message(client_socket)
-                if not message:
-                    continue
-                print(message)
-                if message.startswith("Admin approved") or message.startswith("You were disapproved"):
-                    stop_chat.set()
-                    break
-            except Exception as e:
-                print(f"Error reading message: {e}")
+            message = receive_message(client_socket)
+            if not message:
+                continue
+            print(message)
+            if message.startswith("Admin approved") or message.startswith("You were disapproved") or message.startswith("Server is shutting down"):
                 stop_chat.set()
                 break
 
+    # Start the thread for reading messages
     read_thread = threading.Thread(target=read_messages)
     read_thread.start()
 
+    # Main loop to read user's input and send messages to the server
     while not stop_chat.is_set():
+        if stop_chat.is_set():
+            break
         try:
             message = input()
-             # Avoid sending empty messages and check if chat should stop
-            if message.strip() and not stop_chat.is_set(): 
-                send_message(client_socket, message)
-        except Exception as e:
-            print(f"Error during chat: {e}")
-            stop_chat.set()
+        except EOFError:
             break
+        if message:
+            send_message(client_socket, message)
 
+    # Join the reading thread after exiting the loop
     read_thread.join()
 
 # Function to run the client
@@ -69,20 +69,20 @@ def run_client(server_host='127.0.0.1', server_port=65432):
 
     try:
         challenge = None
+        # Main loop to handle server messages
         while True:
             server_message = receive_message(client_socket)
             if not server_message:
-                print("Server connection lost.")
-                break
-            if server_message.startswith("Enter username:"):
+                raise Exception("Server connection lost.")
+            if server_message.startswith("Enter username"):
                 print(server_message)
-                username = input()
+                username = input().strip()
                 send_message(client_socket, username)
-            elif server_message.startswith("Enter password:"):
+            elif server_message.startswith("Enter password"):
                 print(server_message)
-                password = input()
+                password = input().strip()
                 send_message(client_socket, password)
-            elif server_message.startswith("Username already taken. Please try again or choose a different username."):
+            elif server_message.startswith("Username already taken"):
                 print(server_message)
                 continue
             elif server_message.startswith("CHALLENGE:"):
@@ -97,10 +97,15 @@ def run_client(server_host='127.0.0.1', server_port=65432):
                 else:
                     send_message(client_socket, "Verification failed.")
                     return
+            elif server_message.startswith("Please visit"):
+                print("lol")
+                print(server_message)
+                exit()
             else:
                 print(server_message)
                 break
 
+        # Start handling chat after successful verification
         handle_chat(client_socket, stop_chat)
 
     except Exception as e:

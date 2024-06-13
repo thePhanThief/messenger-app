@@ -3,11 +3,12 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   // Automatic redirect to login screen
   pages: {
-    signIn: "/",  // Specify the login page
+    // Specify the login page
+    signIn: "/",  
   },
 });
 
 export const config = {
   // Protects the nested routes of /users and /conversations
-  matcher: ["/users/:path*", "/conversations/:path*"],  // Apply middleware to these routes and their subpaths
+  matcher: ["/users/:path*", "/conversations/:path*"],
 };
