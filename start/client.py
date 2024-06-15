@@ -1,18 +1,27 @@
 import socket
 import hashlib
 import threading
+import os
 
-# Function to send a message through the socket
-def send_message(sock, message):
+# Generate a random challenge string for verification
+def generate_challenge():
+    return os.urandom(16).hex()
+
+# Simple XOR encryption/decryption
+def xor_encrypt_decrypt(message, key):
+    return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(message, key * (len(message) // len(key) + 1)))
+
+# Send message through the socket, optionally encrypting with session_key
+def send_message(sock, message, session_key=None):
     try:
+        if session_key:
+            message = xor_encrypt_decrypt(message, session_key)
         sock.sendall((message + '\n').encode('utf-8'))
-        if message:
-            print(f"Sent: {message}")
     except Exception as e:
         return
 
-# Function to receive a message from the socket
-def receive_message(sock):
+# Receive message from the socket, optionally decrypting with session_key
+def receive_message(sock, session_key=None):
     data = b''
     try:
         while not data.endswith(b'\n'):
@@ -21,16 +30,18 @@ def receive_message(sock):
                 break
             data += part
         message = data.decode('utf-8').strip()
+        if session_key:
+            message = xor_encrypt_decrypt(message, session_key)
         return message
     except Exception as e:
         return ""
 
-# Function to handle chat messages from the client
-def handle_chat(client_socket, stop_chat):
+# Handle chat messages and keep-alive signals from the client
+def handle_chat(client_socket, stop_chat, session_key):
     # Thread to read messages from the server
     def read_messages():
         while not stop_chat.is_set():
-            message = receive_message(client_socket)
+            message = receive_message(client_socket, session_key)
             if not message:
                 continue
             print(message)
@@ -38,11 +49,10 @@ def handle_chat(client_socket, stop_chat):
                 stop_chat.set()
                 break
 
-    # Start the thread for reading messages
     read_thread = threading.Thread(target=read_messages)
     read_thread.start()
 
-    # Main loop to read user's input and send messages to the server
+    # Main loop to read client's input and send messages to the server
     while not stop_chat.is_set():
         if stop_chat.is_set():
             break
@@ -51,12 +61,11 @@ def handle_chat(client_socket, stop_chat):
         except EOFError:
             break
         if message:
-            send_message(client_socket, message)
+            send_message(client_socket, message, session_key)
 
-    # Join the reading thread after exiting the loop
     read_thread.join()
 
-# Function to run the client
+# Run the client
 def run_client(server_host='127.0.0.1', server_port=65432):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -69,7 +78,6 @@ def run_client(server_host='127.0.0.1', server_port=65432):
 
     try:
         challenge = None
-        # Main loop to handle server messages
         while True:
             server_message = receive_message(client_socket)
             if not server_message:
@@ -98,15 +106,16 @@ def run_client(server_host='127.0.0.1', server_port=65432):
                     send_message(client_socket, "Verification failed.")
                     return
             elif server_message.startswith("Please visit"):
-                print("lol")
                 print(server_message)
                 exit()
             else:
                 print(server_message)
                 break
 
-        # Start handling chat after successful verification
-        handle_chat(client_socket, stop_chat)
+        session_key = hashlib.sha256((challenge + response).encode()).hexdigest()[:16]
+        print(f"Client session key: {session_key}")
+
+        handle_chat(client_socket, stop_chat, session_key)
 
     except Exception as e:
         print("Error:", e)

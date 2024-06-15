@@ -2,16 +2,27 @@ import socket
 import hashlib
 import threading
 import time
+import os
 
-# Function to send a message through the socket
-def send_message(sock, message):
+# Generate a random challenge string for verification
+def generate_challenge():
+    return os.urandom(16).hex()
+
+# Simple XOR encryption/decryption
+def xor_encrypt_decrypt(message, key):
+    return ''.join(chr(ord(c) ^ ord(k)) for c, k in zip(message, key * (len(message) // len(key) + 1)))
+
+# Send message through the socket, optionally encrypting with session_key
+def send_message(sock, message, session_key=None):
     try:
+        if session_key:
+            message = xor_encrypt_decrypt(message, session_key)
         sock.sendall((message + '\n').encode('utf-8'))
     except Exception as e:
         return
 
-# Function to receive a message from the socket
-def receive_message(sock):
+# Receive message from the socket, optionally decrypting with session_key
+def receive_message(sock, session_key=None):
     data = b''
     try:
         while not data.endswith(b'\n'):
@@ -20,31 +31,31 @@ def receive_message(sock):
                 break
             data += part
         message = data.decode('utf-8').strip()
+        if session_key:
+            message = xor_encrypt_decrypt(message, session_key)
         return message
     except Exception as e:
         return ""
 
-# Function to handle chat messages from the admin
-def handle_chat(admin_socket, stop_event):
+# Handle chat messages and keep-alive signals from the admin
+def handle_chat(admin_socket, stop_event, session_key):
     # Thread to read messages from the server
     def read_messages():
         while not stop_event.is_set():
-            message = receive_message(admin_socket)
+            message = receive_message(admin_socket, session_key)
             if not message:
-                break
+                continue
             print(message)
 
-    # Start the thread for reading messages
     read_thread = threading.Thread(target=read_messages)
     read_thread.start()
 
     # Thread to send keep-alive messages to the server
     def send_keep_alive():
         while not stop_event.is_set():
-            send_message(admin_socket, "")
+            send_message(admin_socket, "", session_key)
             time.sleep(5)
 
-    # Start the thread for sending keep-alive messages
     keep_alive_thread = threading.Thread(target=send_keep_alive)
     keep_alive_thread.start()
 
@@ -53,21 +64,20 @@ def handle_chat(admin_socket, stop_event):
         while True:
             message = input().strip()
             if message == "/logoff" or message == "/shutdown":
-                send_message(admin_socket, message)
+                send_message(admin_socket, message, session_key)
                 break
             if message:
-                send_message(admin_socket, message)
+                send_message(admin_socket, message, session_key)
     except Exception as e:
         stop_event.set()
-        send_message(admin_socket, "/logoff")  # Send logoff message to the server
+        send_message(admin_socket, "/logoff", session_key)
         print(f"Error detected, logging off...\nError code: {e}")
     
-    # Stop the event and join threads
     stop_event.set()
     read_thread.join()
     keep_alive_thread.join()
 
-# Function to run the admin client
+# Run the admin client
 def run_admin(server_host='127.0.0.1', admin_port=65433):
     admin_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -86,18 +96,15 @@ def run_admin(server_host='127.0.0.1', admin_port=65433):
 
         print(server_message)
 
-        # Get admin username
         username = input()
         send_message(admin_socket, username)
 
         server_message = receive_message(admin_socket)
         print(server_message)
 
-        # Get admin password
         password = input()
         send_message(admin_socket, password)
 
-        # Handle server messages and challenges
         while True:
             server_message = receive_message(admin_socket)
             if server_message.startswith("Invalid admin credentials"):
@@ -120,8 +127,10 @@ def run_admin(server_host='127.0.0.1', admin_port=65433):
                 print(server_message)
                 break
 
-        # Start handling chat after successful verification
-        handle_chat(admin_socket, stop_event)
+        session_key = hashlib.sha256((challenge + response).encode()).hexdigest()[:16]
+        print(f"Admin session key: {session_key}")
+
+        handle_chat(admin_socket, stop_event, session_key)
 
     except Exception as e:
         print("Error:", e)
