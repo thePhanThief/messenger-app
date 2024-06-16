@@ -47,8 +47,8 @@ def send_message(sock, message, session_key=None):
             message = xor_encrypt_decrypt(message, session_key)
         sock.sendall((message + '\n').encode('utf-8'))
     except Exception as e:
-        print(f"Error sending message: {e}")
-
+        return
+        
 # Receive message from the socket, optionally decrypting with session_key
 def receive_message(sock, session_key=None):
     data = b''
@@ -63,7 +63,6 @@ def receive_message(sock, session_key=None):
             message = xor_encrypt_decrypt(message, session_key)
         return message
     except Exception as e:
-        print(f"Error receiving message: {e}")
         return ""
 
 # Handle admin connections and verification
@@ -107,7 +106,6 @@ def handle_admin(admin_sock):
                 return False
 
             admin_session_key = hashlib.sha256((challenge + admin_hash).encode()).hexdigest()[:16]
-            print(f"Admin session key: {admin_session_key}")
 
             send_message(admin_sock, "Logged in successfully.")
             admin_connected.set()
@@ -351,7 +349,6 @@ def handle_client(client_sock, address):
                 return
             
             client_session_key = hashlib.sha256((challenge + client_hash).encode()).hexdigest()[:16]
-            print(f"Client session key: {client_session_key}")
 
             if username in approved_credentials:
                 send_message(client_sock, "Please visit https://secure-chat-jxr767zd3-nadav-salomons-projects.vercel.app/")

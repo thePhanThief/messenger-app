@@ -113,7 +113,6 @@ def run_client(server_host='127.0.0.1', server_port=65432):
                 break
 
         session_key = hashlib.sha256((challenge + response).encode()).hexdigest()[:16]
-        print(f"Client session key: {session_key}")
 
         handle_chat(client_socket, stop_chat, session_key)
 

@@ -128,7 +128,6 @@ def run_admin(server_host='127.0.0.1', admin_port=65433):
                 break
 
         session_key = hashlib.sha256((challenge + response).encode()).hexdigest()[:16]
-        print(f"Admin session key: {session_key}")
 
         handle_chat(admin_socket, stop_event, session_key)
 
