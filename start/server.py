@@ -205,7 +205,7 @@ def execute_admin_command(command, admin_sock, stop_event):
             return
         approved_credentials[client_username] = client_hashed_password
         save_credentials(approved_credentials)
-        send_message(client_sock, "Admin approved.\nPlease visit https://secure-chat-jxr767zd3-nadav-salomons-projects.vercel.app/ .\nConnection terminated.", session_key)
+        send_message(client_sock, "Admin approved.\nPlease visit https://secure-chat-five.vercel.app/ .\nConnection terminated.", session_key)
         client_sock.close()
         send_message(admin_sock, "Client approved successfully.", admin_session_key)
         current_client = None
@@ -351,7 +351,7 @@ def handle_client(client_sock, address):
             client_session_key = hashlib.sha256((challenge + client_hash).encode()).hexdigest()[:16]
 
             if username in approved_credentials:
-                send_message(client_sock, "Please visit https://secure-chat-jxr767zd3-nadav-salomons-projects.vercel.app/")
+                send_message(client_sock, "Please visit https://secure-chat-five.vercel.app/")
                 client_sock.close()
                 return
             else:
